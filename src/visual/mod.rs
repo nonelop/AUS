@@ -53,7 +53,7 @@ impl Visual {
     }
 }
 
-fn vector3_to_vec3(v: &Vector3) -> Vec3 {
+pub fn vector3_to_vec3(v: &Vector3) -> Vec3 {
     Vec3 {
         x: v.x as f32,
         y: v.y as f32,

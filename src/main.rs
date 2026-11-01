@@ -38,6 +38,10 @@ async fn main() {
     let _cube = world.spawn(Box::new(Atom::new(
         Shape::Cube(Cube::new(Vector3::new(0.0, 2.0, 0.0), Meter(1.0)).unwrap())
     )));
+
+    let _cube2 = world.spawn(Box::new(Atom::new(
+        Shape::Cube(Cube::new(Vector3::new(10.0, 2.0, 0.0), Meter(1.0)).unwrap())
+    )));
     
     world.get_mut_body(atom).unwrap().set_velocity(Vector3::new(4.0, 0.0, 0.0));
 

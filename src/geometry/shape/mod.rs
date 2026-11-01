@@ -53,7 +53,7 @@ impl CollidableShape for Shape {
     fn is_colliding_with(&self, with: &Shape) -> bool {
         match self {
             Self::Sphere(sphere) => sphere.is_colliding_with(with),
-            Self::Cube(_cube) => false
+            Self::Cube(cube) => cube.is_colliding_with(with)
         }
     }
     fn get_collision_info_with(&self, with: &Shape) -> Option<CollisionInfo> {
