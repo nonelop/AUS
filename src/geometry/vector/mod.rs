@@ -39,8 +39,16 @@ impl Vector3 {
     }
 
     pub fn dot(&self, b: &Vector3) -> f64 {
-        return self.x * b.x + self.y * b.y + self.z * b.z;
-    } 
+        self.x * b.x + self.y * b.y + self.z * b.z
+    }
+
+    pub fn cross(&self, b: &Vector3) -> Vector3 {
+        Vector3 { 
+            x: self.y * b.z - self.z * b.y, 
+            y: self.z * b.x - self.x * b.z, 
+            z: self.x * b.y - self.y * b.x
+        }
+    }
 }
 
 impl fmt::Display for Vector3 {
