@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use kiss3d::prelude::*;
 
-use crate::geometry::shape::{GeometryShape, Shape};
+use crate::geometry::shape::Shape;
 use crate::geometry::vector::Vector3;
 use crate::world::{BodyId, World};
 
@@ -49,12 +49,11 @@ impl Visual {
             if let Some(mut node) = self.body_node_map.remove(&i) {
                 node.remove();
             }
-
         }
     }
 }
 
-fn vector3_to_vec3(v: &Vector3) -> Vec3 {
+pub fn vector3_to_vec3(v: &Vector3) -> Vec3 {
     Vec3 {
         x: v.x as f32,
         y: v.y as f32,
@@ -64,9 +63,12 @@ fn vector3_to_vec3(v: &Vector3) -> Vec3 {
 
 pub fn shape_to_node(shape: &Shape) -> Option<SceneNode3d> {
     match shape {
-        Shape::Sphere(_sphere) => {
-            Some(SceneNode3d::sphere(shape.get_radius() as f32))
+        Shape::Sphere(sphere) => {
+            Some(SceneNode3d::sphere(sphere.get_radius() as f32))
         }
-        _ => None
+        Shape::Cube(cube) => {
+            let edge = cube.get_edge() as f32;
+            Some(SceneNode3d::cube(edge, edge, edge))
+        }
     }
 }

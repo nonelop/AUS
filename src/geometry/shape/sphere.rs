@@ -9,8 +9,8 @@ use std::f64::consts::PI;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Sphere {
-    pub center: Vector3,
-    pub radius: f64,
+    center: Vector3,
+    radius: f64,
 }
 
 impl Sphere {
@@ -28,11 +28,14 @@ impl Sphere {
             radius: radius,
         })
     }
+    pub fn get_radius(&self) -> f64 { self.radius }
 }
 
 impl GeometryShape for Sphere {
     fn get_center(&self) -> Vector3 { self.center }
-    fn get_radius(&self) -> f64 { self.radius }
+    fn set_center(&mut self, center: Vector3) {
+        self.center = center;
+    }
     fn get_volume(&self) -> f64 {
         (4.0/3.0) * PI * self.radius.powi(3)
     }

@@ -1,4 +1,4 @@
-use crate::geometry::shape::Shape; 
+use crate::geometry::shape::{GeometryShape, Shape}; 
 use crate::geometry::vector::Vector3; 
 pub trait Body {
     fn get_shape(&self) -> Shape;
@@ -13,8 +13,8 @@ pub trait Body {
         let shape = self.get_shape();
 
         match shape {
-            Shape::Sphere(sphere) => sphere.center,
-            Shape::Cube(_cube) => Vector3::zero(),
+            Shape::Sphere(sphere) => sphere.get_center(),
+            Shape::Cube(cube) => cube.get_center(),
         }
     }
     fn set_position(&mut self, position: Vector3) {
@@ -22,11 +22,13 @@ pub trait Body {
 
         match &mut shape {
             Shape::Sphere(sphere) => {
-                sphere.center = position;
-
-                self.set_shape(Shape::Sphere(*sphere));
+                sphere.set_center(position);
+                self.set_shape(Shape::Sphere(*sphere))
             }
-            Shape::Cube(_cube) => {}
+            Shape::Cube(cube) => {  
+                cube.set_center(position);
+                self.set_shape(Shape::Cube(*cube))
+            }
         }
     }
 }

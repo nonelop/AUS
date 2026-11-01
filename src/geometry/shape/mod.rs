@@ -16,7 +16,7 @@ pub enum Shape {
 // basic shape methods
 pub trait GeometryShape {
     fn get_center(&self) -> Vector3;
-    fn get_radius(&self) -> f64;
+    fn set_center(&mut self, center: Vector3);
     fn get_volume(&self) -> f64;
 }
 
@@ -31,19 +31,19 @@ impl GeometryShape for Shape {
     fn get_center(&self) -> Vector3 {
         match self {
             Shape::Sphere(sphere) => sphere.get_center(),
-            _ => Vector3::zero()
+            Shape::Cube(cube) => cube.get_center()
         }
     }
-    fn get_radius(&self) -> f64 {
+    fn set_center(&mut self, center: Vector3) {
         match self {
-            Self::Sphere(sphere) => sphere.get_radius(),
-            _ => 0.0
+            Shape::Sphere(sphere) => sphere.set_center(center),
+            Self::Cube(cube) => cube.set_center(center),
         }
     }
     fn get_volume(&self) -> f64 {
         match self {
             Shape::Sphere(sphere) => sphere.get_volume(),
-            _ => 0.0
+            Shape::Cube(cube) => cube.get_volume(),
         }
     }
 }
@@ -53,7 +53,7 @@ impl CollidableShape for Shape {
     fn is_colliding_with(&self, with: &Shape) -> bool {
         match self {
             Self::Sphere(sphere) => sphere.is_colliding_with(with),
-            Self::Cube(_cube) => false
+            Self::Cube(cube) => cube.is_colliding_with(with)
         }
     }
     fn get_collision_info_with(&self, with: &Shape) -> Option<CollisionInfo> {

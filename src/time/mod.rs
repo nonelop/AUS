@@ -1,5 +1,5 @@
 use crate::geometry::shape::CollidableShape;
-use crate::world::{BodyId, World};
+use crate::world::World;
 
 
 pub fn tick(dt: f64, world: &mut World) {
