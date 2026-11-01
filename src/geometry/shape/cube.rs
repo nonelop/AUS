@@ -1,4 +1,5 @@
 use crate::errors::GeometryErrors;
+use crate::geometry::quaternion::Quaternion;
 use crate::geometry::shape::{CollidableShape, GeometryShape, Shape};
 use crate::geometry::unit::GeometryUnits;
 use crate::geometry::vector::Vector3;
@@ -7,7 +8,8 @@ use crate::physics::collide::CollisionInfo;
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Cube {
     center: Vector3,
-    edge: f64
+    edge: f64,
+    rotation: Quaternion
 }
 
 impl Cube {
@@ -15,7 +17,7 @@ impl Cube {
         if edge.get_value_in_base() < 0.0 {
             return Err(GeometryErrors::InvalidSizeValue(edge.get_value_in_base()));
         }
-        Ok(Cube { center: position, edge: edge.get_value_in_base() })
+        Ok(Cube { center: position, edge: edge.get_value_in_base(), rotation: Quaternion::zero()})
     }
 
     pub fn get_edge(&self) -> f64 { self.edge }
