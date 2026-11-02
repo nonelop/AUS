@@ -1,8 +1,8 @@
 use crate::errors::GeometryErrors;
-use crate::geometry::quaternion::Quaternion;
+use crate::math::quat::Quaternion;
 use crate::geometry::shape::{CollidableShape, GeometryShape, Shape};
 use crate::geometry::unit::GeometryUnits;
-use crate::geometry::vector::Vector3;
+use crate::math::vec::Vector3;
 use crate::physics::collide::CollisionInfo;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -17,7 +17,7 @@ impl Cube {
         if edge.get_value_in_base() < 0.0 {
             return Err(GeometryErrors::InvalidSizeValue(edge.get_value_in_base()));
         }
-        Ok(Cube { center: position, edge: edge.get_value_in_base(), rotation: Quaternion::zero()})
+        Ok(Cube { center: position, edge: edge.get_value_in_base(), rotation: Quaternion::ZERO})
     }
 
     pub fn get_edge(&self) -> f64 { self.edge }
@@ -59,8 +59,8 @@ impl CollidableShape for Cube {
                 Shape::Cube(_cube) => {
                     Some(CollisionInfo {
                         depth: 0.0,
-                        normal: Vector3::zero(),
-                        contact_point: Vector3::zero()
+                        normal: Vector3::ZERO,
+                        contact_point: Vector3::ZERO
                     })
                 }
             }

@@ -22,7 +22,7 @@ pub trait CollidableBody: Body {
         let with_velocity = with.get_velocity();
 
         let v_rel = with_velocity - self_velocity;
-        let v_rel_n = v_rel.dot(&info.normal);
+        let v_rel_n = v_rel.dot(info.normal);
 
         if v_rel_n <= 0.0 {
             return;

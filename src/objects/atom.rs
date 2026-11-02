@@ -1,5 +1,5 @@
 use crate::geometry::shape::{GeometryShape, Shape};
-use crate::geometry::vector::Vector3;
+use crate::math::vec::Vector3;
 use crate::physics::collide::body::CollidableBody;
 use crate::physics::moves::body::MoveableBody;
 use crate::physics::body::PhysicsBody;
@@ -13,7 +13,7 @@ pub struct Atom {
 
 impl Atom {
     pub fn new(shape: Shape) -> Self {
-        Atom { shape, velocity: Vector3::zero(), density: 1.0}
+        Atom { shape, velocity: Vector3::ZERO, density: 1.0}
     }
 }
 

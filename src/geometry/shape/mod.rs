@@ -3,7 +3,7 @@ pub mod sphere;
 
 use cube::Cube;
 use sphere::Sphere;
-use crate::geometry::vector::Vector3;
+use crate::math::vec::Vector3;
 use crate::physics::collide::CollisionInfo;
 
 // enum for group all shapes to one object

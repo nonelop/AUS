@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use kiss3d::prelude::*;
 
 use crate::geometry::shape::Shape;
-use crate::geometry::vector::Vector3;
+use crate::math::vec::Vector3;
 use crate::world::{BodyId, World};
 
 pub struct Visual {

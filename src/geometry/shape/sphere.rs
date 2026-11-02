@@ -1,6 +1,6 @@
 use crate::errors::GeometryErrors;
 use crate::geometry::shape::GeometryShape;
-use crate::geometry::vector::Vector3;
+use crate::math::vec::Vector3;
 use crate::geometry::unit::GeometryUnits;
 use crate::physics::collide::CollisionInfo;
 use super::CollidableShape;
