@@ -1,5 +1,3 @@
-// This file contains operator overloads and impl Display for Vector3
-
 use super::Vector3;
 use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign, Neg};
 use std::fmt;

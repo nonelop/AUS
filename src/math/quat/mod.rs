@@ -1,3 +1,5 @@
+pub mod ops;
+
 use super::vec::Vector3;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -18,6 +20,33 @@ impl Quaternion {
 
     pub fn from_vector3(v: Vector3) -> Self {
         Self { w: 0.0, x: v.x, y: v.y, z: v.z }
+    }
+
+    pub fn from_rotation_x(angle: f64) -> Self {
+        let half_angle = angle / 2.0;
+        Self { w: half_angle.cos(), x: half_angle.sin(), y: 0.0, z: 0.0 }
+    }
+
+    pub fn from_rotation_y(angle: f64) -> Self {
+        let half_angle = angle / 2.0;
+        Self { w: half_angle.cos(), x: 0.0, y: half_angle.sin(), z: 0.0 }
+    }
+
+    pub fn from_rotation_z(angle: f64) -> Self {
+        let half_angle = angle / 2.0;
+        Self { w: half_angle.cos(), x: 0.0, y: 0.0, z: half_angle.sin() }
+    }
+
+    pub fn from_axis(axis: Vector3, angle: f64) -> Self {
+        let half_angle = angle / 2.0;
+        let axis = axis.normalize();
+
+        Self { 
+            w: half_angle.cos(), 
+            x: axis.x * half_angle.sin(), 
+            y: axis.y * half_angle.sin(),
+            z: axis.z * half_angle.sin()
+        }
     }
 
     pub fn conjugate(&self) -> Self {
