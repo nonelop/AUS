@@ -1,8 +1,8 @@
 use crate::errors::GeometryErrors;
-use crate::math::quat::Quaternion;
+use crate::math::quaternion::Quaternion;
 use crate::geometry::shape::{CollidableShape, GeometryShape, Shape};
 use crate::geometry::unit::GeometryUnits;
-use crate::math::vec::Vector3;
+use crate::math::vector::Vector3;
 use crate::physics::collide::CollisionInfo;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -13,11 +13,11 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn new(position: Vector3, edge: GeometryUnits) -> Result<Self, GeometryErrors> {
+    pub fn new(position: Vector3, edge: GeometryUnits, rotation: Quaternion) -> Result<Self, GeometryErrors> {
         if edge.get_value_in_base() < 0.0 {
             return Err(GeometryErrors::InvalidSizeValue(edge.get_value_in_base()));
         }
-        Ok(Cube { center: position, edge: edge.get_value_in_base(), rotation: Quaternion::ZERO})
+        Ok(Cube { center: position, edge: edge.get_value_in_base(), rotation })
     }
 
     pub fn get_edge(&self) -> f64 { self.edge }
@@ -29,6 +29,12 @@ impl GeometryShape for Cube {
     }
     fn set_center(&mut self, center: Vector3) {
         self.center = center
+    }
+    fn get_rotation(&self) -> Quaternion {
+        self.rotation
+    }
+    fn set_rotation(&mut self, rotation: Quaternion) {
+        self.rotation = rotation;
     }
     fn get_volume(&self) -> f64 {
         self.edge.powi(3)

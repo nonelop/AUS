@@ -1,5 +1,5 @@
 use crate::geometry::shape::{GeometryShape, Shape}; 
-use crate::math::vec::Vector3;
+use crate::math::vector::Vector3;
 pub trait Body {
     fn get_shape(&self) -> Shape;
     fn set_shape(&mut self, shape: Shape);

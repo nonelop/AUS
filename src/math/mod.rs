@@ -1,2 +1,2 @@
-pub mod vec;
-pub mod quat;
+pub mod vector;
+pub mod quaternion;

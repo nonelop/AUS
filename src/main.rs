@@ -9,14 +9,12 @@ mod config;
 mod visual;
 mod world;
 
-use std::println;
-
 use kiss3d::prelude::*;
 
 use crate::geometry::shape::cube::Cube;
 use crate::geometry::unit::GeometryUnits::Meter;
-use crate::math::vec::Vector3;
-use crate::math::quat::Quaternion;
+use crate::math::vector::Vector3;
+use crate::math::quaternion::Quaternion;
 use crate::geometry::shape::{Shape, sphere::Sphere};
 use crate::objects::atom::Atom;
 use crate::config::DELTA_TIME;
@@ -32,22 +30,26 @@ async fn main() {
     let mut camera = OrbitCamera3d::default();
 
     let atom = world.spawn(Box::new(Atom::new(
-        Shape::Sphere(Sphere::new(Vector3 {x: 0.0, y: 0.25, z: 0.15}, Meter(1.0)).unwrap())
+        Shape::Sphere(Sphere::new(Vector3 {x: 0.0, y: 0.25, z: 0.15}, Meter(1.0), Quaternion::ZERO).unwrap())
     )));
 
-    let _atom2 = world.spawn(Box::new(Atom::new(
-        Shape::Sphere(Sphere::new(Vector3 {x: 20.0, y: 0.0, z: 0.0}, Meter(1.0)).unwrap())
+    world.spawn(Box::new(Atom::new(
+        Shape::Sphere(Sphere::new(Vector3 {x: 20.0, y: 0.0, z: 0.0}, Meter(1.0), Quaternion::ZERO).unwrap())
     )));
 
-    let _cube = world.spawn(Box::new(Atom::new(
-        Shape::Cube(Cube::new(Vector3 {x: 0.0, y: 2.0, z: 0.0}, Meter(1.0)).unwrap())
+    world.spawn(Box::new(Atom::new(
+        Shape::Cube(Cube::new(
+            Vector3 {x: 0.0, y: 2.0, z: 0.0}, Meter(1.0), Quaternion::from_axis(
+                Vector3 { x: 0.3, y: 0.5, z: 0.2 }, 1.23
+            ))
+            .unwrap())
     )));
 
-    let _cube2 = world.spawn(Box::new(Atom::new(
-        Shape::Cube(Cube::new(Vector3 {x: 10.0, y: 2.0, z: 0.0}, Meter(1.0)).unwrap())
+    world.spawn(Box::new(Atom::new(
+        Shape::Cube(Cube::new(
+            Vector3 {x: 10.0, y: 2.0, z: 0.0}, Meter(1.0), Quaternion::from_rotation_x(0.5))
+            .unwrap())
     )));
-
-    println!("{}", Quaternion::from_rotation_x(2.0));
 
     world.get_mut_body(atom).unwrap().set_velocity(Vector3 {x: 10.0, y: 0.0, z: 0.0});
 
