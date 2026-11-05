@@ -1,9 +1,12 @@
+pub mod comp;
+
 use std::collections::HashMap;
 
 use kiss3d::prelude::*;
 
 use crate::geometry::shape::Shape;
-use crate::geometry::vector::Vector3;
+use crate::geometry::shape::GeometryShape;
+use crate::math::vector::Vector3;
 use crate::world::{BodyId, World};
 
 pub struct Visual {
@@ -27,11 +30,14 @@ impl Visual {
             match self.body_node_map.get_mut(&i) {
                 Some(node) => {
                     node.set_position(
-                        vector3_to_vec3(&world.get_body(i).unwrap().get_position())
+                        Vec3::from(world.get_body(i).unwrap().get_position())
+                    );
+                    node.set_rotation(
+                        Quat::from(world.get_body(i).unwrap().get_shape().get_rotation())
                     );
                 }
                 None => {
-                    let node = shape_to_node(&world.get_body(i).unwrap().get_shape()).unwrap();
+                    let node = SceneNode3d::from(world.get_body(i).unwrap().get_shape());
                     self.scene.add_child(node.clone());
                     self.body_node_map.insert(i, node);
                 }
@@ -49,26 +55,6 @@ impl Visual {
             if let Some(mut node) = self.body_node_map.remove(&i) {
                 node.remove();
             }
-        }
-    }
-}
-
-pub fn vector3_to_vec3(v: &Vector3) -> Vec3 {
-    Vec3 {
-        x: v.x as f32,
-        y: v.y as f32,
-        z: v.z as f32,
-    }
-}
-
-pub fn shape_to_node(shape: &Shape) -> Option<SceneNode3d> {
-    match shape {
-        Shape::Sphere(sphere) => {
-            Some(SceneNode3d::sphere(sphere.get_radius() as f32))
-        }
-        Shape::Cube(cube) => {
-            let edge = cube.get_edge() as f32;
-            Some(SceneNode3d::cube(edge, edge, edge))
         }
     }
 }

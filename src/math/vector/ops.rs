@@ -1,5 +1,18 @@
 use super::Vector3;
-use std::ops::{Add, Sub, Mul, Div, AddAssign};
+use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign, Neg};
+use std::fmt;
+
+impl Neg for Vector3 {
+    type Output = Vector3;
+
+    fn neg(self) -> Self::Output {
+        Vector3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z
+        }
+    }
+}
 
 impl Add for Vector3 {
     type Output = Vector3;
@@ -33,6 +46,14 @@ impl Sub for Vector3 {
     }
 }
 
+impl SubAssign for Vector3 {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
+        self.z -= rhs.z;
+    }
+}
+
 impl Mul for Vector3 {
     type Output = Vector3;
 
@@ -45,10 +66,18 @@ impl Mul for Vector3 {
     }
 }
 
+impl MulAssign for Vector3 {
+    fn mul_assign(&mut self, rhs: Self) {
+        self.x *= rhs.x;
+        self.y *= rhs.y;
+        self.z *= rhs.z;
+    }
+}
+
 impl Mul<Vector3> for f64 {
     type Output = Vector3;
 
-    fn mul(self, v: Vector3) -> Vector3 {
+    fn mul(self, v: Vector3) -> Self::Output {
         Vector3 {
             x: self * v.x,
             y: self * v.y,
@@ -77,6 +106,14 @@ impl Div for Vector3 {
     }
 }
 
+impl DivAssign for Vector3 {
+    fn div_assign(&mut self, rhs: Self) {
+        self.x /= rhs.x;
+        self.y /= rhs.y;
+        self.z /= rhs.z;
+    }
+}
+
 impl Div<f64> for Vector3 {
     type Output = Vector3;
 
@@ -86,5 +123,11 @@ impl Div<f64> for Vector3 {
             y: self.y / rhs,
             z: self.z / rhs
         }
+    }
+}
+
+impl fmt::Display for Vector3 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(f, "[{:.4}, {:.4}, {:.4}]", self.x, self.y, self.z);
     }
 }

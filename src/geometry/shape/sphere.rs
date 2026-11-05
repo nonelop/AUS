@@ -1,6 +1,7 @@
 use crate::errors::GeometryErrors;
 use crate::geometry::shape::GeometryShape;
-use crate::geometry::vector::Vector3;
+use crate::math::vector::Vector3;
+use crate::math::quaternion::Quaternion;
 use crate::geometry::unit::GeometryUnits;
 use crate::physics::collide::CollisionInfo;
 use super::CollidableShape;
@@ -11,10 +12,11 @@ use std::f64::consts::PI;
 pub struct Sphere {
     center: Vector3,
     radius: f64,
+    rotation: Quaternion
 }
 
 impl Sphere {
-    pub fn new(position: Vector3, radius: GeometryUnits) -> Result<Self, GeometryErrors> {
+    pub fn new(position: Vector3, radius: GeometryUnits, rotation: Quaternion) -> Result<Self, GeometryErrors> {
         let radius = radius.to_base_unit().get_value_in_base();
         
         if radius <= 0.0 {
@@ -25,16 +27,25 @@ impl Sphere {
 
         Ok(Sphere {
             center: position,
-            radius: radius,
+            radius,
+            rotation
         })
     }
     pub fn get_radius(&self) -> f64 { self.radius }
 }
 
 impl GeometryShape for Sphere {
-    fn get_center(&self) -> Vector3 { self.center }
+    fn get_center(&self) -> Vector3 {
+        self.center
+    }
     fn set_center(&mut self, center: Vector3) {
         self.center = center;
+    }
+    fn get_rotation(&self) -> Quaternion {
+        self.rotation
+    }
+    fn set_rotation(&mut self, rotation: Quaternion) {
+        self.rotation = rotation
     }
     fn get_volume(&self) -> f64 {
         (4.0/3.0) * PI * self.radius.powi(3)

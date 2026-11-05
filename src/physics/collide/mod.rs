@@ -1,6 +1,6 @@
 pub mod body;
 
-use crate::geometry::vector::Vector3;
+use crate::math::vector::Vector3;
 
 #[derive(Debug)]
 pub struct CollisionInfo {

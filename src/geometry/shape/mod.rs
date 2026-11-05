@@ -3,7 +3,8 @@ pub mod sphere;
 
 use cube::Cube;
 use sphere::Sphere;
-use crate::geometry::vector::Vector3;
+use crate::math::quaternion::Quaternion;
+use crate::math::vector::Vector3;
 use crate::physics::collide::CollisionInfo;
 
 // enum for group all shapes to one object
@@ -17,6 +18,8 @@ pub enum Shape {
 pub trait GeometryShape {
     fn get_center(&self) -> Vector3;
     fn set_center(&mut self, center: Vector3);
+    fn get_rotation(&self) -> Quaternion;
+    fn set_rotation(&mut self, rotation: Quaternion);
     fn get_volume(&self) -> f64;
 }
 
@@ -34,12 +37,28 @@ impl GeometryShape for Shape {
             Shape::Cube(cube) => cube.get_center()
         }
     }
+
     fn set_center(&mut self, center: Vector3) {
         match self {
             Shape::Sphere(sphere) => sphere.set_center(center),
-            Self::Cube(cube) => cube.set_center(center),
+            Shape::Cube(cube) => cube.set_center(center),
         }
     }
+
+    fn get_rotation(&self) -> Quaternion {
+        match self {
+            Shape::Sphere(sphere) => sphere.get_rotation(),
+            Shape::Cube(cube) => cube.get_rotation(),
+        }
+    }
+
+    fn set_rotation(&mut self, rotation: Quaternion) {
+        match self {
+            Shape::Sphere(sphere) => sphere.set_rotation(rotation),
+            Shape::Cube(cube) => cube.set_rotation(rotation),
+        }
+    }
+
     fn get_volume(&self) -> f64 {
         match self {
             Shape::Sphere(sphere) => sphere.get_volume(),
