@@ -1,8 +1,8 @@
 use kiss3d::prelude::*;
 
 use crate::geometry::shape::Shape;
-use crate::math::vector::Vector3;
-use crate::math::quaternion::Quaternion;
+use crate::algebra::vector::Vector3;
+use crate::algebra::quaternion::Quaternion;
 
 impl From<Vector3> for Vec3 {
     fn from(value: Vector3) -> Self {

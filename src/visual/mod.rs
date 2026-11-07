@@ -4,9 +4,7 @@ use std::collections::HashMap;
 
 use kiss3d::prelude::*;
 
-use crate::geometry::shape::Shape;
 use crate::geometry::shape::GeometryShape;
-use crate::math::vector::Vector3;
 use crate::world::{BodyId, World};
 
 pub struct Visual {

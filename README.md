@@ -6,7 +6,7 @@
 
 **AUS** is an engine and simulation written in Rust. It models Space, Time, Geometric calculations, and Physical laws, along with objects, and in the future, it will provide a space for the emergence of spontaneous reactions and events, such as chemistry and biology.
 
-> Status: 0.3.0-alpha. Under active development. Architecture and APIs are subject to change.
+> Status: 0.4.0-alpha. Under active development. Architecture and APIs are subject to change.
 
 ## Philosophy
 

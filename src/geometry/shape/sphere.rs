@@ -1,9 +1,9 @@
 use crate::errors::GeometryErrors;
 use crate::geometry::shape::GeometryShape;
-use crate::math::vector::Vector3;
-use crate::math::quaternion::Quaternion;
+use crate::algebra::vector::Vector3;
+use crate::algebra::quaternion::Quaternion;
 use crate::geometry::unit::GeometryUnits;
-use crate::physics::collide::CollisionInfo;
+use crate::physics::CollisionInfo;
 use super::CollidableShape;
 use super::Shape;
 use std::f64::consts::PI;
@@ -77,11 +77,7 @@ impl CollidableShape for Sphere {
                     let normal = (self.center - sphere.center).normalize();
                     let contact_point = self.center + (self.radius * normal);
 
-                    Some(CollisionInfo {
-                        depth,
-                        normal,
-                        contact_point
-                    })
+                    None
                 }
                 Shape::Cube(_cube) => {
                     None

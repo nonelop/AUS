@@ -1,8 +1,5 @@
 use crate::geometry::shape::{GeometryShape, Shape};
-use crate::math::vector::Vector3;
-use crate::physics::collide::body::CollidableBody;
-use crate::physics::moves::body::MoveableBody;
-use crate::physics::body::PhysicsBody;
+use crate::algebra::vector::Vector3;
 use crate::body::Body;
 
 pub struct Atom {
@@ -28,9 +25,3 @@ impl Body for Atom {
         self.density * self.get_shape().get_volume()
     }
 }
-
-impl CollidableBody for Atom {}
-
-impl MoveableBody for Atom {}
-
-impl PhysicsBody for Atom {}

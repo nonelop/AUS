@@ -19,14 +19,14 @@ pub fn tick(dt: f64, world: &mut World) {
                 if obj_body.get_shape().is_colliding_with(
                     &with_body.get_shape()
                 ) {
-                    let info = obj_body
-                    .get_shape()
-                    .get_collision_info_with(&with_body.get_shape())
-                    .unwrap();
+                    // let info = obj_body
+                    // .get_shape()
+                    // .get_collision_info_with(&with_body.get_shape())
+                    // .unwrap();
 
                     obj_body.collide(
-                        with_body,
-                        info
+                        // with_body,
+                        // info
                     );
                 }
             }

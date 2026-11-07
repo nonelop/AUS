@@ -1,6 +1,6 @@
 # AUS Documentation
 
-> Version of AUS: 0.3.0-alpha
+> Version of AUS: 0.4.0-alpha
 
 ## Contents
 

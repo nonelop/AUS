@@ -1,4 +1,4 @@
-mod math;
+mod algebra;
 mod geometry;
 mod physics;
 mod body;
@@ -9,12 +9,14 @@ mod config;
 mod visual;
 mod world;
 
+use std::println;
+
 use kiss3d::prelude::*;
 
 use crate::geometry::shape::cube::Cube;
 use crate::geometry::unit::GeometryUnits::Meter;
-use crate::math::vector::Vector3;
-use crate::math::quaternion::Quaternion;
+use crate::algebra::vector::Vector3;
+use crate::algebra::quaternion::Quaternion;
 use crate::geometry::shape::{Shape, sphere::Sphere};
 use crate::objects::atom::Atom;
 use crate::config::DELTA_TIME;

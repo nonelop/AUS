@@ -1,9 +1,10 @@
 use crate::errors::GeometryErrors;
-use crate::math::quaternion::Quaternion;
+use crate::algebra::quaternion::Quaternion;
 use crate::geometry::shape::{CollidableShape, GeometryShape, Shape};
 use crate::geometry::unit::GeometryUnits;
-use crate::math::vector::Vector3;
-use crate::physics::collide::CollisionInfo;
+use crate::algebra::vector::Vector3;
+use crate::physics::CollisionInfo;
+use crate::physics::BodySnapshot;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Cube {
@@ -62,13 +63,7 @@ impl CollidableShape for Cube {
         if self.is_colliding_with(with) {
             match with {
                 Shape::Sphere(_sphere) => None,
-                Shape::Cube(_cube) => {
-                    Some(CollisionInfo {
-                        depth: 0.0,
-                        normal: Vector3::ZERO,
-                        contact_point: Vector3::ZERO
-                    })
-                }
+                Shape::Cube(_cube) => None
             }
         }
         else {
