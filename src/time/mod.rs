@@ -25,8 +25,7 @@ pub fn tick(dt: f64, world: &mut World) {
                     // .unwrap();
 
                     obj_body.collide(
-                        // with_body,
-                        // info
+                        with_body
                     );
                 }
             }

@@ -8,6 +8,8 @@ mod errors;
 mod config;
 mod visual;
 mod world;
+mod bridge;
+mod properties;
 
 use std::println;
 

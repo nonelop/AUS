@@ -2,6 +2,7 @@ use std::println;
 
 use crate::geometry::shape::{GeometryShape, Shape}; 
 use crate::algebra::vector::Vector3;
+
 pub trait Body {
     fn get_shape(&self) -> Shape;
     fn set_shape(&mut self, shape: Shape);
@@ -38,5 +39,5 @@ pub trait Body {
         self.set_position(self.get_position() + self.get_velocity() * dt);
     }
 
-    fn collide(&mut self) {}
+    fn collide(&mut self, with: &mut dyn Body);
 }

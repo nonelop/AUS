@@ -2,7 +2,7 @@ use crate::body::Body;
 use crate::algebra::vector::Vector3;
 use super::{CollisionInfo, CollisionResult, BodySnapshot};
 
-fn collide(info: CollisionInfo) -> CollisionResult {
+pub fn collide(info: CollisionInfo) -> CollisionResult {
     let a = info.a;
     let b = info.b;
 

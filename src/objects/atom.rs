@@ -1,6 +1,7 @@
 use crate::geometry::shape::{GeometryShape, Shape};
 use crate::algebra::vector::Vector3;
 use crate::body::Body;
+use crate::bridge::resovle_collision;
 
 pub struct Atom {
     shape: Shape,
@@ -23,5 +24,9 @@ impl Body for Atom {
 
     fn get_mass(&self) -> f64 {
         self.density * self.get_shape().get_volume()
+    }
+
+    fn collide(&mut self, with: &mut dyn Body) {
+        resovle_collision(self, with);
     }
 }
