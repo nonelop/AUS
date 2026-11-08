@@ -1,4 +1,3 @@
-use crate::body::Body;
 use crate::algebra::vector::Vector3;
 use super::{CollisionInfo, CollisionResult, BodySnapshot};
 
