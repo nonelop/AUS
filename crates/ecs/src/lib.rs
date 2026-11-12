@@ -5,7 +5,7 @@ mod tests;
 
 #[derive(Debug)]
 struct Storage<T> {
-    pub content: Vec<Option<T>>
+    content: Vec<Option<T>>
 }
 
 impl<T> Storage<T> {
@@ -38,9 +38,9 @@ impl<T> Storage<T> {
     }
 }
 
-struct World {
-    pub components: HashMap<TypeId, Storage<Box<dyn Any>>>,
-    pub id_counter: usize
+pub struct World {
+    components: HashMap<TypeId, Storage<Box<dyn Any>>>,
+    id_counter: usize
 }
 
 impl World {
@@ -54,11 +54,39 @@ impl World {
         e
     }
 
+    pub fn despawn(&mut self, id: usize) {
+        for (_, storage) in &mut self.components {
+            storage.remove(id);
+        }
+    }
+
     pub fn get_component<T: 'static>(&self, id: usize) -> Option<&T> {
         let key = TypeId::of::<T>();
         let storage = self.components.get(&key)?;
 
         storage.get(id)?.downcast_ref()
+    }
+
+    pub fn get_mut_component<T: 'static>(&mut self, id: usize) -> Option<&mut T> {
+        let key = TypeId::of::<T>();
+        let storage = self.components.get_mut(&key)?;
+
+        storage.get_mut(id)?.downcast_mut()
+    }
+
+    pub fn get_two_mut_components<F: 'static, S: 'static>(&mut self, id1: usize, id2: usize)
+    -> Option<(&mut F, &mut S)> {
+        if TypeId::of::<F>() != TypeId::of::<S>() || id1 != id2 {
+            unsafe {
+                let first: *mut F = self.get_mut_component::<F>(id1)?;
+                let second: *mut S = self.get_mut_component::<S>(id2)?;
+
+                Some((&mut *first, &mut *second))
+            }
+        }
+        else {
+            None
+        }
     }
 
     pub fn get_by_query(&self, query: Query) -> Vec<Entity> {
@@ -67,7 +95,7 @@ impl World {
         let mut is_first = true;
 
         for i in query.with {
-            let key = i.as_ref().type_id();
+            let key = i;
             let storage = self.components.get(&key);
 
             if let Some(storage) = storage {
@@ -115,70 +143,22 @@ impl World {
     }
 }
 
-struct Query {
-    pub with: Vec<Box<dyn Any>>
+pub struct Query {
+    with: Vec<TypeId>
 }
 
 impl Query {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self { with: Vec::new() }
     }
 
-    fn with(mut self, value: Box<dyn Any>) -> Self {
-        self.with.push(value);
+    pub fn with<T: 'static>(mut self) -> Self {
+        self.with.push(TypeId::of::<T>());
         self
     } 
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
-struct Entity {
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Entity {
     pub id: usize
-}
-
-trait Boxed {
-    fn as_boxed(self) -> Box<dyn Any> where Self: Sized + 'static {
-        let boxed: Box<dyn Any> = Box::new(self);
-        boxed
-    }
-}
-
-#[derive(Clone, Copy)]
-struct Position {
-    x: i32
-}
-
-struct Velocity {
-    x: i32
-}
-
-impl Position {
-    pub const DEFAULT: Self = Self { x: 0 };
-}
-
-impl Velocity {
-    pub const DEFAULT: Self = Self { x: 0 };
-}
-
-impl Boxed for Position {}
-impl Boxed for Velocity {}
-
-fn main() {
-    let mut world = World::new();
-
-    let entity1 = world.spawn();
-    let entity2 = world.spawn();
-
-    let position1 = Position { x: 5 };
-    let position2 = Position { x: 10 };
-    let velocity1 = Velocity { x: 1 };
-
-    world.append_component::<Position>(entity1.id, position1);
-    world.append_component::<Velocity>(entity1.id, velocity1);
-    world.append_component::<Position>(entity2.id, position2);
-
-    let entities = world.get_by_query(Query::new().with(Position::DEFAULT.as_boxed()).with(Velocity::DEFAULT.as_boxed()));
-
-    for e in entities {
-        println!("{}", e.id);
-    }
 }
