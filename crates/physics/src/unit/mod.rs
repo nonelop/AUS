@@ -1,5 +1,3 @@
-use core::panic;
-
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GeometryUnits {
     Nanometer(f64),

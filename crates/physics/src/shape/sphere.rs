@@ -1,10 +1,9 @@
 use crate::errors::GeometryErrors;
-use crate::geometry::shape::GeometryShape;
-use crate::algebra::vector::Vector3;
-use crate::algebra::quaternion::Quaternion;
-use crate::geometry::unit::GeometryUnits;
-use crate::physics::CollisionInfo;
+use super::GeometryShape;
+use wisk::prelude::*;
+use super::CollisionInfo;
 use super::CollidableShape;
+use crate::unit::GeometryUnits;
 use super::Shape;
 use std::f64::consts::PI;
 

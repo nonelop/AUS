@@ -1,10 +1,8 @@
 use crate::errors::GeometryErrors;
-use crate::algebra::quaternion::Quaternion;
-use crate::geometry::shape::{CollidableShape, GeometryShape, Shape};
-use crate::geometry::unit::GeometryUnits;
-use crate::algebra::vector::Vector3;
-use crate::physics::CollisionInfo;
-use crate::physics::BodySnapshot;
+use wisk::prelude::*;
+use super::{CollidableShape, GeometryShape, Shape};
+use super::{CollisionInfo};
+use crate::unit::GeometryUnits;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Cube {

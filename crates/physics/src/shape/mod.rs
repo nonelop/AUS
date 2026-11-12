@@ -3,9 +3,8 @@ pub mod sphere;
 
 use cube::Cube;
 use sphere::Sphere;
-use crate::algebra::quaternion::Quaternion;
-use crate::algebra::vector::Vector3;
-use crate::physics::CollisionInfo;
+use wisk::prelude::*;
+use super::CollisionInfo;
 
 // enum for group all shapes to one object
 #[derive(Clone, Copy, PartialEq)]

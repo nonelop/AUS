@@ -1,5 +1,4 @@
-use crate::algebra::vector::Vector3;
-use super::{CollisionInfo, CollisionResult, BodySnapshot};
+use super::{CollisionInfo, CollisionResult};
 
 pub fn collide(info: CollisionInfo) -> CollisionResult {
     let a = info.a;
