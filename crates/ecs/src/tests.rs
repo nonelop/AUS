@@ -62,7 +62,7 @@ fn test_world_spawn() {
 #[test]
 fn test_world_append_get() {
     let (mut world, _storage, entity) = test_values();
-    world.append_component(entity.id, TestComponent { x: 5 });
+    world.add_component(entity.id, TestComponent { x: 5 });
     let result = world.get_component::<TestComponent>(entity.id).unwrap();
 
     assert_eq!(result.x, 5)

@@ -2,8 +2,6 @@ use wisk::prelude::*;
 
 pub mod collide;
 pub mod moves;
-pub mod shape;
-pub mod unit;
 pub mod errors;
 
 #[derive(Clone, Copy)]

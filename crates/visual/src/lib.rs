@@ -2,35 +2,38 @@
 use std::collections::HashMap;
 
 use kiss3d::prelude::*;
-use physics::shape::GeometryShape;
 use ecs::{Entity, World, Query};
 use std_components::*;
 
 pub struct Visual {
-    scene: SceneNode3d,
-    body_node_map: HashMap<Entity, SceneNode3d>
+    pub scene: SceneNode3d,
+    entity_node_map: HashMap<Entity, SceneNode3d>
 }
 
 impl Visual {
     pub fn new() -> Self {
         Visual {
             scene: SceneNode3d::empty(),
-            body_node_map: HashMap::new()
+            entity_node_map: HashMap::new()
         }
     }
 
     pub fn update(&mut self, world: &World) {
         let entities = world.get_by_query(
-            Query::new().with::<Visulized>().with::<Position3>().with::<Rotation3>()
+            Query::new().with::<Visulized>().with::<Position3D>().with::<Rotation3D>()
         );
+
+        for e in &entities {
+            println!("{}", e.id);
+        }
 
         let mut to_delete: Vec<Entity> = Vec::new();
 
         for e in entities {
-            match self.body_node_map.get_mut(&e) {
+            match self.entity_node_map.get_mut(&e) {
                 Some(node) => {
-                    let pos = world.get_component::<Position3>(e.id).unwrap();
-                    let rot = world.get_component::<Rotation3>(e.id).unwrap();
+                    let pos = world.get_component::<Position3D>(e.id).unwrap();
+                    let rot = world.get_component::<Rotation3D>(e.id).unwrap();
 
                     node.set_position(
                         Vec3 { x: pos.0.x as f32, y: pos.0.y as f32, z: pos.0.z as f32 }
@@ -41,20 +44,24 @@ impl Visual {
 
                 }
                 None => {
-
+                    println!("Node for {} not found", e.id);
+                    if let Some(sphere) = world.get_component::<Sphere3D>(e.id) {
+                        let node = self.scene.add_sphere(sphere.radius as f32);
+                        self.entity_node_map.insert(e, node);
+                        println!("Add node sphere to {}", e.id);
+                    }
                 }
             }
         }
 
-        for i in self.body_node_map.keys() {
-            // match world.g {
-            //     Some(_body) => continue,
-            //     None => to_delete.push(*i),
-            // }
+        for e in self.entity_node_map.keys() {
+            if !world.check(e.id) {
+                to_delete.push(*e);
+            }
         }
 
         for i in to_delete {
-            if let Some(mut node) = self.body_node_map.remove(&i) {
+            if let Some(mut node) = self.entity_node_map.remove(&i) {
                 node.remove();
             }
         }

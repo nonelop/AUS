@@ -15,6 +15,7 @@ pub struct Entity {
 
 pub struct World {
     components: HashMap<TypeId, Storage<Box<dyn Any>>>,
+    entity_registry: Vec<Option<Entity>>,
     id_counter: usize
 }
 
@@ -54,18 +55,40 @@ impl<T> Storage<T> {
 
 impl World {
     pub fn new() -> Self {
-        Self { components: HashMap::new(), id_counter: 0 }
+        Self { components: HashMap::new(), entity_registry: Vec::new(), id_counter: 0 }
     }
     
     pub fn spawn(&mut self) -> Entity {
         let e = Entity { id: self.id_counter };
+
+        if self.entity_registry.len() <= self.id_counter {
+            self.entity_registry.resize_with(self.id_counter + 1, || None);
+        }
+        self.entity_registry[self.id_counter] = Some(e);
+
         self.id_counter += 1;
         e
     }
 
     pub fn despawn(&mut self, id: usize) {
+        if self.entity_registry.len() > id {
+            self.entity_registry[id] = None
+        } else {
+            return;
+        }
+
         for (_, storage) in &mut self.components {
             storage.remove(id);
+        }
+    }
+
+    pub fn check(&self, id: usize) -> bool {
+        if self.entity_registry.len() <= id {
+            false
+        } else if self.entity_registry.get(id).is_none() {
+            false
+        } else {
+            true
         }
     }
 
@@ -103,8 +126,7 @@ impl World {
         let mut candidates: Vec<usize> = Vec::new();
         let mut is_first = true;
 
-        for i in query.with {
-            let key = i;
+        for key in query.with {
             let storage = self.components.get(&key);
 
             if let Some(storage) = storage {
@@ -132,7 +154,7 @@ impl World {
         entities
     }
 
-    pub fn append_component<T: 'static>(&mut self, id: usize, component: T) {
+    pub fn add_component<T: 'static>(&mut self, id: usize, component: T) {
         let key = TypeId::of::<T>();
         let storage = self.components.get_mut(&key);
 
