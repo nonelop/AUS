@@ -1,14 +1,14 @@
-pub mod comp;
 
 use std::collections::HashMap;
 
 use kiss3d::prelude::*;
-
 use physics::shape::GeometryShape;
+use ecs::{Entity, World, Query};
+use std_components::*;
 
 pub struct Visual {
-    pub scene: SceneNode3d,
-    body_node_map: HashMap<BodyId, SceneNode3d>
+    scene: SceneNode3d,
+    body_node_map: HashMap<Entity, SceneNode3d>
 }
 
 impl Visual {
@@ -20,32 +20,37 @@ impl Visual {
     }
 
     pub fn update(&mut self, world: &World) {
-        let body_ids = world.get_body_ids();
-        let mut to_delete: Vec<BodyId> = Vec::new();
+        let entities = world.get_by_query(
+            Query::new().with::<Visulized>().with::<Position3>().with::<Rotation3>()
+        );
 
-        for i in body_ids {
-            match self.body_node_map.get_mut(&i) {
+        let mut to_delete: Vec<Entity> = Vec::new();
+
+        for e in entities {
+            match self.body_node_map.get_mut(&e) {
                 Some(node) => {
+                    let pos = world.get_component::<Position3>(e.id).unwrap();
+                    let rot = world.get_component::<Rotation3>(e.id).unwrap();
+
                     node.set_position(
-                        Vec3::from(world.get_body(i).unwrap().get_position())
+                        Vec3 { x: pos.0.x as f32, y: pos.0.y as f32, z: pos.0.z as f32 }
                     );
-                    node.set_rotation(
-                        Quat::from(world.get_body(i).unwrap().get_shape().get_rotation())
-                    );
+                    node.set_rotation(Quat::from_xyzw(
+                        rot.0.x as f32, rot.0.y as f32, rot.0.z as f32, rot.0.w as f32
+                    ));
+
                 }
                 None => {
-                    let node = SceneNode3d::from(world.get_body(i).unwrap().get_shape());
-                    self.scene.add_child(node.clone());
-                    self.body_node_map.insert(i, node);
+
                 }
             }
         }
 
         for i in self.body_node_map.keys() {
-            match world.get_body(*i) {
-                Some(_body) => continue,
-                None => to_delete.push(*i),
-            }
+            // match world.g {
+            //     Some(_body) => continue,
+            //     None => to_delete.push(*i),
+            // }
         }
 
         for i in to_delete {

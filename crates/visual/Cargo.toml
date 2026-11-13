@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-physics = { path = "../physics" }
-wisk = { path = "../algebra" }
 kiss3d = "0.46"
+wisk = { path = "../algebra"}
+physics = { path = "../physics" }
+ecs = { path = "../ecs" }
+std_components = { path = "../std_components" }

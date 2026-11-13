@@ -8,6 +8,20 @@ struct Storage<T> {
     content: Vec<Option<T>>
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Entity {
+    pub id: usize
+}
+
+pub struct World {
+    components: HashMap<TypeId, Storage<Box<dyn Any>>>,
+    id_counter: usize
+}
+
+pub struct Query {
+    with: Vec<TypeId>
+}
+
 impl<T> Storage<T> {
     pub fn new() -> Self {
         Self { content: Vec::new() }
@@ -36,11 +50,6 @@ impl<T> Storage<T> {
     pub fn get_mut(&mut self, id: usize) -> Option<&mut T> {
         self.content.get_mut(id)?.as_mut()
     }
-}
-
-pub struct World {
-    components: HashMap<TypeId, Storage<Box<dyn Any>>>,
-    id_counter: usize
 }
 
 impl World {
@@ -143,10 +152,6 @@ impl World {
     }
 }
 
-pub struct Query {
-    with: Vec<TypeId>
-}
-
 impl Query {
     pub fn new() -> Self {
         Self { with: Vec::new() }
@@ -156,9 +161,4 @@ impl Query {
         self.with.push(TypeId::of::<T>());
         self
     } 
-}
-
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Entity {
-    pub id: usize
 }
