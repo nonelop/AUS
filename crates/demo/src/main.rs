@@ -1,6 +1,7 @@
 use ecs::{Query, World};
+use ecs::eql::{lexer, parser};
 use wisk::prelude::*;
-use std_components::*;
+use ecs_utils::*;
 use kiss3d::prelude::*;
 use visual::Visual;
 
@@ -9,27 +10,34 @@ const DT: f64 = 0.01;
 #[kiss3d::main]
 async fn main() {
     let mut visual = Visual::new();
-    let mut window = Window::new("Kiss3d: cube").await;
+    let mut window = Window::new("AUS Engine").await;
     let mut camera = OrbitCamera3d::default();
 
     let mut world = World::new();
 
     let entity = world.spawn();
     world.add_component(entity.id, Position3D(Vector3 { x: 0.0, y: 0.0, z: 10.0 }));
-    world.add_component(entity.id, Velocity3D(Vector3 { x: 10.0, y: 0.0, z: 0.0 }));
-    world.add_component(entity.id, Rotation3D(Quaternion::IDENTITY));
+    world.add_component(entity.id, Velocity3D(Vector3 { x: 1.0, y: 0.0, z: 0.0 }));
+    world.add_component(entity.id, Rotation3D(Quaternion::from_axis(
+        Vector3 { x: 0.5, y: 0.3, z: 0.2 }, 3.25)));
     world.add_component(entity.id, Visulized {});
-    world.add_component(entity.id, Sphere3D { radius: 2.5 });
+    world.add_component(entity.id, Cube3D { edge_size: 1.0 });
+
+    let tokens = lexer("WITH (Position3D)");
+    println!("{:?}", tokens);
+    let units = parser(tokens, &world);
+    match units {
+        Ok(un) => {
+            for u in un { println!("{:?}", u) } 
+        }
+        Err(e) => {
+            println!("{:?}", e);
+        }
+    }
 
     let mut counter = 0;
 
     while window.render_3d(&mut visual.scene, &mut camera).await {
-        println!("[C]: {} [P]: {} [V]: {}",
-        counter,
-        world.get_component::<Position3D>(entity.id).unwrap().0,
-        world.get_component::<Velocity3D>(entity.id).unwrap().0
-        );
-
         moving_system(&mut world);
         visual.update(&world);
 

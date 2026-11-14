@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use kiss3d::prelude::*;
 use ecs::{Entity, World, Query};
-use std_components::*;
+use ecs_utils::*;
 
 pub struct Visual {
     pub scene: SceneNode3d,
@@ -23,10 +23,6 @@ impl Visual {
             Query::new().with::<Visulized>().with::<Position3D>().with::<Rotation3D>()
         );
 
-        for e in &entities {
-            println!("{}", e.id);
-        }
-
         let mut to_delete: Vec<Entity> = Vec::new();
 
         for e in entities {
@@ -44,11 +40,15 @@ impl Visual {
 
                 }
                 None => {
-                    println!("Node for {} not found", e.id);
                     if let Some(sphere) = world.get_component::<Sphere3D>(e.id) {
                         let node = self.scene.add_sphere(sphere.radius as f32);
                         self.entity_node_map.insert(e, node);
-                        println!("Add node sphere to {}", e.id);
+                    } else if let Some(cube) = world.get_component::<Cube3D>(e.id) {
+                        let edge = cube.edge_size as f32;
+                        let node = self.scene.add_cube(
+                           edge, edge, edge
+                        );
+                        self.entity_node_map.insert(e, node);
                     }
                 }
             }

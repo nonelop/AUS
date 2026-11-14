@@ -1,9 +1,6 @@
 use wisk::prelude::*;
 
 pub mod collide;
-pub mod moves;
-pub mod errors;
-
 #[derive(Clone, Copy)]
 pub struct BodySnapshot {
     pub position: Vector3,

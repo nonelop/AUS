@@ -9,4 +9,4 @@ visual = { path = "../visual" }
 wisk = { path = "../algebra"}
 physics = { path = "../physics" }
 ecs = { path = "../ecs" }
-std_components = { path = "../std_components" }
+ecs_utils = { path = "../ecs_utils" }

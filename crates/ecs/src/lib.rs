@@ -1,26 +1,19 @@
-use std::{any::{Any, TypeId}, collections::HashMap};
+use std::{any::{Any, TypeId, type_name}, collections::HashMap};
 
 #[cfg(test)]
 mod tests;
 
-#[derive(Debug)]
-struct Storage<T> {
-    content: Vec<Option<T>>
-}
+pub mod eql;
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Entity {
     pub id: usize
 }
 
-pub struct World {
-    components: HashMap<TypeId, Storage<Box<dyn Any>>>,
-    entity_registry: Vec<Option<Entity>>,
-    id_counter: usize
-}
-
-pub struct Query {
-    with: Vec<TypeId>
+#[derive(Debug)]
+pub(crate) struct Storage<T> {
+    pub(crate) content: Vec<Option<T>>
 }
 
 impl<T> Storage<T> {
@@ -53,9 +46,21 @@ impl<T> Storage<T> {
     }
 }
 
+pub struct World {
+    pub(crate) components: HashMap<TypeId, Storage<Box<dyn Any>>>,
+    pub(crate) type_names: HashMap<String, TypeId>,
+    entity_registry: Vec<Option<Entity>>,
+    id_counter: usize
+}
+
 impl World {
     pub fn new() -> Self {
-        Self { components: HashMap::new(), entity_registry: Vec::new(), id_counter: 0 }
+        Self { 
+            components: HashMap::new(), 
+            type_names: HashMap::new(), 
+            entity_registry: Vec::new(), 
+            id_counter: 0 
+        }
     }
     
     pub fn spawn(&mut self) -> Entity {
@@ -85,7 +90,7 @@ impl World {
     pub fn check(&self, id: usize) -> bool {
         if self.entity_registry.len() <= id {
             false
-        } else if self.entity_registry.get(id).is_none() {
+        } else if self.entity_registry.get(id) == Some(&None) {
             false
         } else {
             true
@@ -168,10 +173,17 @@ impl World {
                 let mut new_storage = Storage::new();
                 new_storage.insert(id, boxed);
 
+                let type_name = type_name::<T>();
+
                 self.components.insert(key, new_storage);
+                self.type_names.insert(type_name.to_string(), key);
             }
         }
     }
+}
+
+pub struct Query {
+    with: Vec<TypeId>
 }
 
 impl Query {
