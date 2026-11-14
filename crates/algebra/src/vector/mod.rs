@@ -11,17 +11,49 @@ pub struct Vector3 {
 }
 
 impl Vector3 {
-    pub const ZERO: Self = Self { x: 0.0, y: 0.0, z: 0.0 };
-    pub const ONE: Self = Self { x: 1.0, y: 1.0, z: 1.0 };
+    pub const ZERO: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+    };
+    pub const ONE: Self = Self {
+        x: 1.0,
+        y: 1.0,
+        z: 1.0,
+    };
 
-    pub const RIGHT: Self = Self { x: 1.0, y: 0.0, z: 0.0 };
-    pub const LEFT: Self = Self { x: -1.0, y: 0.0, z: 0.0 };
+    pub const RIGHT: Self = Self {
+        x: 1.0,
+        y: 0.0,
+        z: 0.0,
+    };
+    pub const LEFT: Self = Self {
+        x: -1.0,
+        y: 0.0,
+        z: 0.0,
+    };
 
-    pub const UP: Self = Self { x: 0.0, y: 1.0, z: 0.0 };
-    pub const DOWN: Self = Self { x: 0.0, y: -1.0, z: 0.0 };
+    pub const UP: Self = Self {
+        x: 0.0,
+        y: 1.0,
+        z: 0.0,
+    };
+    pub const DOWN: Self = Self {
+        x: 0.0,
+        y: -1.0,
+        z: 0.0,
+    };
 
-    pub const FORWARD: Self = Self { x: 0.0, y: 0.0, z: -1.0 };
-    pub const BACKWARD: Self = Self { x: 0.0, y: 0.0, z: 1.0 };
+    pub const FORWARD: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        z: -1.0,
+    };
+    pub const BACKWARD: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        z: 1.0,
+    };
 
     pub fn normalize(&self) -> Self {
         let vector_length = self.length();
@@ -31,9 +63,12 @@ impl Vector3 {
             let ny = self.y / vector_length;
             let nz = self.z / vector_length;
 
-            Vector3 { x: nx, y: ny, z: nz }
-        }
-        else {
+            Vector3 {
+                x: nx,
+                y: ny,
+                z: nz,
+            }
+        } else {
             *self
         }
     }
@@ -47,10 +82,10 @@ impl Vector3 {
     }
 
     pub fn cross(&self, b: Vector3) -> Vector3 {
-        Vector3 { 
-            x: self.y * b.z - self.z * b.y, 
-            y: self.z * b.x - self.x * b.z, 
-            z: self.x * b.y - self.y * b.x
+        Vector3 {
+            x: self.y * b.z - self.z * b.y,
+            y: self.z * b.x - self.x * b.z,
+            z: self.x * b.y - self.y * b.x,
         }
     }
 }

@@ -9,13 +9,13 @@ use super::vector::Vector3;
 pub struct Matrix3 {
     pub c1: Vector3,
     pub c2: Vector3,
-    pub c3: Vector3
+    pub c3: Vector3,
 }
 
 impl Matrix3 {
-    pub const ZERO: Self = Self { 
-        c1: Vector3::ZERO, 
+    pub const ZERO: Self = Self {
+        c1: Vector3::ZERO,
         c2: Vector3::ZERO,
-        c3: Vector3::ZERO
+        c3: Vector3::ZERO,
     };
 }

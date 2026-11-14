@@ -8,7 +8,7 @@ pub struct BodySnapshot {
     pub velocity: Vector3,
     pub angular_velocity: Vector3,
 
-    pub mass: f64
+    pub mass: f64,
 }
 
 #[derive(Clone, Copy)]
@@ -18,11 +18,11 @@ pub struct CollisionInfo {
 
     pub depth: f64,
     pub normal: Vector3,
-    pub contact_point: Vector3
+    pub contact_point: Vector3,
 }
 
 #[derive(Clone, Copy)]
 pub struct CollisionResult {
     pub a: BodySnapshot,
-    pub b: BodySnapshot
+    pub b: BodySnapshot,
 }

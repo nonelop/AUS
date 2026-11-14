@@ -2,7 +2,7 @@ use super::*;
 
 #[derive(Debug)]
 struct TestComponent {
-    pub x: i32
+    pub x: i32,
 }
 
 fn test_values() -> (World, Storage<TestComponent>, Entity) {

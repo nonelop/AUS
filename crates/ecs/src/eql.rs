@@ -1,8 +1,9 @@
 use std::any::TypeId;
-use super::World;
+
+use super::{Entity, World};
 
 #[derive(Debug, PartialEq)]
-pub enum Token {
+enum Token {
     Type(String),
     With,
     OpenParen,
@@ -12,28 +13,57 @@ pub enum Token {
 #[derive(Debug)]
 pub enum ParserError {
     UnexpectedParen,
-    InvalidType
+    InvalidType,
 }
 
 #[derive(PartialEq, Debug)]
 enum ProcessingUnitType {
     Null,
-    With
+    With,
 }
 
 #[derive(PartialEq, Debug)]
-pub struct ProcessingUnit {
+struct ProcessingUnit {
     unit_type: ProcessingUnitType,
-    with: Vec<TypeId>
+    with: Vec<TypeId>,
 }
 
 impl ProcessingUnit {
     fn new() -> Self {
-        Self { unit_type: ProcessingUnitType::Null, with: Vec::new() }
+        Self {
+            unit_type: ProcessingUnitType::Null,
+            with: Vec::new(),
+        }
     }
 }
 
-pub fn lexer(query: &str) -> Vec<Token> {
+enum ProcessingResultType {
+    Null,
+    Entity,
+}
+
+struct ProcessingResult {
+    result_type: ProcessingResultType,
+    entity: Vec<Entity>,
+}
+
+impl ProcessingResult {
+    fn new() -> Self {
+        Self {
+            result_type: ProcessingResultType::Null,
+            entity: Vec::new(),
+        }
+    }
+}
+
+pub fn resolver(query: &str, world: &World) -> Result<Vec<Entity>, ParserError> {
+    let tokens = lexer(query);
+    let units = parser(tokens, world)?;
+    let result = processor(units, world);
+    Ok(result.entity)
+}
+
+fn lexer(query: &str) -> Vec<Token> {
     let mut token_buffer: String = String::new();
     let mut lexed_tokens: Vec<Token> = Vec::new();
 
@@ -59,7 +89,7 @@ pub fn lexer(query: &str) -> Vec<Token> {
     lexed_tokens
 }
 
-pub fn parser(tokens: Vec<Token>, world: &World) -> Result<Vec<ProcessingUnit>, ParserError> {
+fn parser(tokens: Vec<Token>, world: &World) -> Result<Vec<ProcessingUnit>, ParserError> {
     let mut units: Vec<ProcessingUnit> = Vec::new();
     let mut unit_buffer: ProcessingUnit = ProcessingUnit::new();
 
@@ -74,9 +104,7 @@ pub fn parser(tokens: Vec<Token>, world: &World) -> Result<Vec<ProcessingUnit>, 
                 }
             }
             Token::CloseParen => {
-                units.push(
-                    std::mem::replace(&mut unit_buffer, ProcessingUnit::new())
-                );
+                units.push(std::mem::replace(&mut unit_buffer, ProcessingUnit::new()));
             }
             Token::Type(type_name) => {
                 if let Some(type_id) = type_name_to_type_id(world, &type_name) {
@@ -88,6 +116,43 @@ pub fn parser(tokens: Vec<Token>, world: &World) -> Result<Vec<ProcessingUnit>, 
         }
     }
     Ok(units)
+}
+
+fn processor(units: Vec<ProcessingUnit>, world: &World) -> ProcessingResult {
+    let mut result: ProcessingResult = ProcessingResult::new();
+    let mut candidates: Vec<usize> = Vec::new();
+    let mut is_first_iter = true;
+
+    for u in units {
+        match u.unit_type {
+            ProcessingUnitType::With => {
+                result.result_type = ProcessingResultType::Entity;
+                for t in u.with {
+                    if let Some(storage) = world.components.get(&t) {
+                        let somes_with_type: Vec<usize> = storage
+                            .content
+                            .iter()
+                            .enumerate()
+                            .filter(|(_, c)| c.is_some())
+                            .map(|(i, _)| i)
+                            .collect();
+
+                        if is_first_iter {
+                            is_first_iter = false;
+                            candidates.extend(somes_with_type);
+                        } else {
+                            candidates.retain(|id| somes_with_type.contains(id));
+                        }
+                    }
+                }
+                for e in &candidates {
+                    result.entity.push(Entity { id: *e });
+                }
+            }
+            ProcessingUnitType::Null => result.result_type = ProcessingResultType::Null,
+        }
+    }
+    result
 }
 
 fn push_token(token: &mut String, to: &mut Vec<Token>) {
@@ -104,8 +169,8 @@ fn push_token(token: &mut String, to: &mut Vec<Token>) {
     token.clear();
 }
 
-pub fn type_name_to_type_id(world: &World, type_name: &str) -> Option<TypeId> {
-    for (raw_name, type_id) in &world.type_names{
+fn type_name_to_type_id(world: &World, type_name: &str) -> Option<TypeId> {
+    for (raw_name, type_id) in &world.type_names {
         let name: Vec<&str> = raw_name.split("::").collect();
         let name = name[name.len() - 1];
 

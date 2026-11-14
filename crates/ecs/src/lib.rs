@@ -1,24 +1,28 @@
-use std::{any::{Any, TypeId, type_name}, collections::HashMap};
+use std::{
+    any::{Any, TypeId, type_name},
+    collections::HashMap,
+};
 
 #[cfg(test)]
 mod tests;
 
 pub mod eql;
 
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Entity {
-    pub id: usize
+    pub id: usize,
 }
 
 #[derive(Debug)]
 pub(crate) struct Storage<T> {
-    pub(crate) content: Vec<Option<T>>
+    pub(crate) content: Vec<Option<T>>,
 }
 
 impl<T> Storage<T> {
     pub fn new() -> Self {
-        Self { content: Vec::new() }
+        Self {
+            content: Vec::new(),
+        }
     }
 
     pub fn insert(&mut self, id: usize, value: T) {
@@ -50,24 +54,27 @@ pub struct World {
     pub(crate) components: HashMap<TypeId, Storage<Box<dyn Any>>>,
     pub(crate) type_names: HashMap<String, TypeId>,
     entity_registry: Vec<Option<Entity>>,
-    id_counter: usize
+    id_counter: usize,
 }
 
 impl World {
     pub fn new() -> Self {
-        Self { 
-            components: HashMap::new(), 
-            type_names: HashMap::new(), 
-            entity_registry: Vec::new(), 
-            id_counter: 0 
+        Self {
+            components: HashMap::new(),
+            type_names: HashMap::new(),
+            entity_registry: Vec::new(),
+            id_counter: 0,
         }
     }
-    
+
     pub fn spawn(&mut self) -> Entity {
-        let e = Entity { id: self.id_counter };
+        let e = Entity {
+            id: self.id_counter,
+        };
 
         if self.entity_registry.len() <= self.id_counter {
-            self.entity_registry.resize_with(self.id_counter + 1, || None);
+            self.entity_registry
+                .resize_with(self.id_counter + 1, || None);
         }
         self.entity_registry[self.id_counter] = Some(e);
 
@@ -111,8 +118,11 @@ impl World {
         storage.get_mut(id)?.downcast_mut()
     }
 
-    pub fn get_two_mut_components<F: 'static, S: 'static>(&mut self, id1: usize, id2: usize)
-    -> Option<(&mut F, &mut S)> {
+    pub fn get_two_mut_components<F: 'static, S: 'static>(
+        &mut self,
+        id1: usize,
+        id2: usize,
+    ) -> Option<(&mut F, &mut S)> {
         if TypeId::of::<F>() != TypeId::of::<S>() || id1 != id2 {
             unsafe {
                 let first: *mut F = self.get_mut_component::<F>(id1)?;
@@ -120,8 +130,7 @@ impl World {
 
                 Some((&mut *first, &mut *second))
             }
-        }
-        else {
+        } else {
             None
         }
     }
@@ -135,16 +144,18 @@ impl World {
             let storage = self.components.get(&key);
 
             if let Some(storage) = storage {
-                let some_entities: Vec<usize> = storage.content.iter().enumerate()
-                .filter(|(_, c)| c.is_some())
-                .map(|(i, _)| i )
-                .collect();
+                let some_entities: Vec<usize> = storage
+                    .content
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, c)| c.is_some())
+                    .map(|(i, _)| i)
+                    .collect();
 
                 if is_first {
                     candidates.extend(some_entities);
                     is_first = false
-                }
-                else {
+                } else {
                     candidates.retain(|id| some_entities.contains(id));
                 }
             } else {
@@ -183,7 +194,7 @@ impl World {
 }
 
 pub struct Query {
-    with: Vec<TypeId>
+    with: Vec<TypeId>,
 }
 
 impl Query {
@@ -194,5 +205,5 @@ impl Query {
     pub fn with<T: 'static>(mut self) -> Self {
         self.with.push(TypeId::of::<T>());
         self
-    } 
+    }
 }

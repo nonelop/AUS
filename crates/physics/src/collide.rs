@@ -9,8 +9,16 @@ pub fn collide(info: CollisionInfo) -> CollisionResult {
     let self_mass = a.mass;
     let with_mass = b.mass;
 
-    let inv_self_mass = if self_mass <= 0.0 {0.0} else {1.0 / self_mass};
-    let inv_with_mass = if with_mass <= 0.0 {0.0} else {1.0 / with_mass};
+    let inv_self_mass = if self_mass <= 0.0 {
+        0.0
+    } else {
+        1.0 / self_mass
+    };
+    let inv_with_mass = if with_mass <= 0.0 {
+        0.0
+    } else {
+        1.0 / with_mass
+    };
     let inv_total_mass = inv_self_mass + inv_with_mass;
 
     if inv_total_mass <= 0.0 {

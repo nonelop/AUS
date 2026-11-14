@@ -1,9 +1,9 @@
+use ecs::eql::resolver;
 use ecs::{Query, World};
-use ecs::eql::{lexer, parser};
-use wisk::prelude::*;
 use ecs_utils::*;
 use kiss3d::prelude::*;
 use visual::Visual;
+use wisk::prelude::*;
 
 const DT: f64 = 0.01;
 
@@ -16,26 +16,48 @@ async fn main() {
     let mut world = World::new();
 
     let entity = world.spawn();
-    world.add_component(entity.id, Position3D(Vector3 { x: 0.0, y: 0.0, z: 10.0 }));
-    world.add_component(entity.id, Velocity3D(Vector3 { x: 1.0, y: 0.0, z: 0.0 }));
-    world.add_component(entity.id, Rotation3D(Quaternion::from_axis(
-        Vector3 { x: 0.5, y: 0.3, z: 0.2 }, 3.25)));
+    world.add_component(
+        entity.id,
+        Position3D(Vector3 {
+            x: 0.0,
+            y: 0.0,
+            z: 10.0,
+        }),
+    );
+    world.add_component(
+        entity.id,
+        Velocity3D(Vector3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        }),
+    );
+
+    world.add_component(
+        entity.id,
+        Rotation3D(Quaternion::from_axis(
+            Vector3 {
+                x: 0.5,
+                y: 0.3,
+                z: 0.2,
+            },
+            3.25,
+        )),
+    );
     world.add_component(entity.id, Visulized {});
     world.add_component(entity.id, Cube3D { edge_size: 1.0 });
 
-    let tokens = lexer("WITH (Position3D)");
-    println!("{:?}", tokens);
-    let units = parser(tokens, &world);
-    match units {
-        Ok(un) => {
-            for u in un { println!("{:?}", u) } 
+    let mut counter = 0;
+
+    let entities = resolver("WITH (Rotation3D)", &world);
+    match entities {
+        Ok(entities) => {
+            for e in entities { println!("{:?}", e.id) }
         }
         Err(e) => {
             println!("{:?}", e);
         }
     }
-
-    let mut counter = 0;
 
     while window.render_3d(&mut visual.scene, &mut camera).await {
         moving_system(&mut world);
@@ -46,12 +68,12 @@ async fn main() {
 }
 
 fn moving_system(world: &mut World) {
-    let entities = world.get_by_query(Query::new()
-    .with::<Position3D>()
-    .with::<Velocity3D>());
+    let entities = world.get_by_query(Query::new().with::<Position3D>().with::<Velocity3D>());
 
     for e in &entities {
-        let (position, velocity) = world.get_two_mut_components::<Position3D, Velocity3D>(e.id, e.id).unwrap();
+        let (position, velocity) = world
+            .get_two_mut_components::<Position3D, Velocity3D>(e.id, e.id)
+            .unwrap();
 
         position.0 += DT * velocity.0;
     }

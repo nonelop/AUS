@@ -1,6 +1,6 @@
 use super::Vector3;
-use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign, Neg};
 use std::fmt;
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 impl Neg for Vector3 {
     type Output = Vector3;
@@ -9,7 +9,7 @@ impl Neg for Vector3 {
         Vector3 {
             x: -self.x,
             y: -self.y,
-            z: -self.z
+            z: -self.z,
         }
     }
 }
@@ -21,7 +21,7 @@ impl Add for Vector3 {
         Vector3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
-            z: self.z + rhs.z
+            z: self.z + rhs.z,
         }
     }
 }
@@ -41,7 +41,7 @@ impl Sub for Vector3 {
         Vector3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
-            z: self.z - rhs.z
+            z: self.z - rhs.z,
         }
     }
 }
@@ -61,7 +61,7 @@ impl Mul for Vector3 {
         Vector3 {
             x: self.x * rhs.x,
             y: self.y * rhs.y,
-            z: self.z * rhs.z
+            z: self.z * rhs.z,
         }
     }
 }
@@ -88,7 +88,7 @@ impl Mul<Vector3> for f64 {
 
 impl Mul<f64> for Vector3 {
     type Output = Vector3;
-    
+
     fn mul(self, rhs: f64) -> Self::Output {
         rhs * self
     }
@@ -109,7 +109,7 @@ impl Div for Vector3 {
         Vector3 {
             x: self.x / rhs.x,
             y: self.y / rhs.y,
-            z: self.z / rhs.z
+            z: self.z / rhs.z,
         }
     }
 }
@@ -129,7 +129,7 @@ impl Div<f64> for Vector3 {
         Vector3 {
             x: self.x / rhs,
             y: self.y / rhs,
-            z: self.z / rhs
+            z: self.z / rhs,
         }
     }
 }
