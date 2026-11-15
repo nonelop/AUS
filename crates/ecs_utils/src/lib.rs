@@ -23,12 +23,9 @@ pub struct Visulized {}
 // == Bridge Systems ==
 
 pub fn resolve_collision(world: &mut World) {
-    let collidable = world.get_by_query(
-        Query::new()
-            .with::<Position3D>()
-            .with::<Velocity3D>()
-            .with::<Rotation3D>(),
-    );
+    let collidable = world
+        .query("WITH (Position3D Velocity3D Rotation3D)")
+        .unwrap();
 
     for e in collidable {}
 }

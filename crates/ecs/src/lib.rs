@@ -1,6 +1,7 @@
+use eql::resolver;
 use std::{
     any::{Any, TypeId, type_name},
-    collections::HashMap,
+    collections::{HashMap, HashSet},
 };
 
 #[cfg(test)]
@@ -135,41 +136,6 @@ impl World {
         }
     }
 
-    pub fn get_by_query(&self, query: Query) -> Vec<Entity> {
-        let mut entities: Vec<Entity> = Vec::new();
-        let mut candidates: Vec<usize> = Vec::new();
-        let mut is_first = true;
-
-        for key in query.with {
-            let storage = self.components.get(&key);
-
-            if let Some(storage) = storage {
-                let some_entities: Vec<usize> = storage
-                    .content
-                    .iter()
-                    .enumerate()
-                    .filter(|(_, c)| c.is_some())
-                    .map(|(i, _)| i)
-                    .collect();
-
-                if is_first {
-                    candidates.extend(some_entities);
-                    is_first = false
-                } else {
-                    candidates.retain(|id| some_entities.contains(id));
-                }
-            } else {
-                return Vec::new();
-            }
-        }
-
-        for id in &candidates {
-            entities.push(Entity { id: *id });
-        }
-
-        entities
-    }
-
     pub fn add_component<T: 'static>(&mut self, id: usize, component: T) {
         let key = TypeId::of::<T>();
         let storage = self.components.get_mut(&key);
@@ -190,6 +156,10 @@ impl World {
                 self.type_names.insert(type_name.to_string(), key);
             }
         }
+    }
+
+    pub fn query(&mut self, query: &str) -> Result<HashSet<Entity>, eql::ParserError> {
+        resolver(query, self)
     }
 }
 

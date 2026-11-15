@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use ecs::{Entity, Query, World};
+use ecs::{Entity, World};
 use ecs_utils::*;
 use kiss3d::prelude::*;
 
@@ -17,13 +17,8 @@ impl Visual {
         }
     }
 
-    pub fn update(&mut self, world: &World) {
-        let entities = world.get_by_query(
-            Query::new()
-                .with::<Visulized>()
-                .with::<Position3D>()
-                .with::<Rotation3D>(),
-        );
+    pub fn update(&mut self, world: &mut World) {
+        let entities = world.query("SELECT WITH (Visulized Position3D Rotation3D)").unwrap();
 
         let mut to_delete: Vec<Entity> = Vec::new();
 
