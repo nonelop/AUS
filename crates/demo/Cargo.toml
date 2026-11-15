@@ -10,3 +10,5 @@ wisk = { path = "../algebra"}
 physics = { path = "../physics" }
 ecs = { path = "../ecs" }
 ecs_utils = { path = "../ecs_utils" }
+env_logger = "0.11.11"
+log = "0.4.35"

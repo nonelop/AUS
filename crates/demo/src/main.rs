@@ -4,11 +4,14 @@ use ecs_utils::*;
 use kiss3d::prelude::*;
 use visual::Visual;
 use wisk::prelude::*;
+use env_logger;
 
 const DT: f64 = 0.01;
 
 #[kiss3d::main]
 async fn main() {
+    env_logger::init();
+    
     let mut visual = Visual::new();
     let mut window = Window::new("AUS Engine").await;
     let mut camera = OrbitCamera3d::default();
@@ -49,10 +52,12 @@ async fn main() {
 
     let mut counter = 0;
 
-    let entities = resolver("WITH (Rotation3D)", &world);
+    let entities = resolver("SELECT WITHOUT(OR WITH(Position3D))", &world);
     match entities {
         Ok(entities) => {
-            for e in entities { println!("{:?}", e.id) }
+            for e in entities {
+                println!("{:?}", e.id)
+            }
         }
         Err(e) => {
             println!("{:?}", e);
@@ -61,14 +66,14 @@ async fn main() {
 
     while window.render_3d(&mut visual.scene, &mut camera).await {
         moving_system(&mut world);
-        visual.update(&world);
+        visual.update(&mut world);
 
         counter += 1;
     }
 }
 
 fn moving_system(world: &mut World) {
-    let entities = world.get_by_query(Query::new().with::<Position3D>().with::<Velocity3D>());
+    let entities = world.query("SELECT WITH (Position3D Velocity3D)").unwrap();
 
     for e in &entities {
         let (position, velocity) = world
