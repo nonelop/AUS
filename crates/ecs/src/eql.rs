@@ -1,6 +1,6 @@
 use super::{Entity, World};
+use log::trace;
 use std::{any::TypeId, collections::HashSet};
-use log::{debug, trace};
 
 #[derive(Debug, PartialEq)]
 enum Token {
@@ -55,9 +55,7 @@ impl Unit {
                 selecting.filters.push(filter);
                 return Ok(());
             }
-            _ => {
-                Err(ParserError::ExpectedSelectingStatment)
-            }
+            _ => Err(ParserError::ExpectedSelectingStatment),
         }
     }
     fn add_to_selecting_filter(&mut self, id: TypeId) -> Result<(), ParserError> {
@@ -111,7 +109,7 @@ impl Unit {
                 new_filters.extend(selecting.filters.clone());
 
                 for f in &mut selecting.filters {
-                    if iteration != last && last >= 2 && *f != Filter::And {
+                    if iteration != last && last >= 1 && *f != Filter::And {
                         new_filters.insert(iteration + 1, Filter::And);
                     }
                     iteration += 1;
@@ -130,6 +128,7 @@ struct SelectingUnit {
     filters: Vec<Filter>,
 }
 
+#[derive(Debug)]
 enum ProcessingResult {
     New,
     Select(SelectingResult),
@@ -141,6 +140,7 @@ impl ProcessingResult {
     }
 }
 
+#[derive(Debug)]
 struct SelectingResult {
     selected: HashSet<Entity>,
 }
@@ -240,6 +240,7 @@ fn processor(units: Vec<Unit>, world: &World) -> ProcessingResult {
             _ => {}
         }
     }
+    trace!("PROCESSOR: FINAL: {:?}", result);
     result
 }
 
@@ -292,32 +293,41 @@ fn array_from_filters(filters: Vec<Filter>, world: &World) -> HashSet<Entity> {
     for filter in filters {
         match filter {
             Filter::With(with) => {
-                let entities = with_ids(with, world);
+                let entities = with_types(with, world);
 
                 match operator_flag {
                     LogicalOperator::And => buffer = arrays_and(entities, Vec::from_iter(buffer)),
                     LogicalOperator::Or => buffer = arrays_or(entities, Vec::from_iter(buffer)),
-                    LogicalOperator::Null => buffer = arrays_and(entities, Vec::from_iter(buffer)),
+                    LogicalOperator::Null => buffer = HashSet::from_iter(entities),
+                }
+            }
+            Filter::Without(without) => {
+                let entities = without_types(without, world);
+
+                match operator_flag {
+                    LogicalOperator::And => buffer = arrays_and(entities, Vec::from_iter(buffer)),
+                    LogicalOperator::Or => buffer = arrays_or(entities, Vec::from_iter(buffer)),
+                    LogicalOperator::Null => buffer = HashSet::from_iter(entities),
                 }
             }
             Filter::And => operator_flag = LogicalOperator::And,
             Filter::Or => operator_flag = LogicalOperator::Or,
-            _ => {}
         }
     }
     result.extend(buffer);
     result
 }
 
-fn with_ids(ids: Vec<TypeId>, world: &World) -> Vec<Entity> {
-    let mut result: Vec<Entity> = Vec::new();
+fn with_types(type_ids: Vec<TypeId>, world: &World) -> Vec<Entity> {
+    let result: Vec<Entity>;
     let mut buffer: HashSet<Entity> = HashSet::new();
+    let mut is_first_iter = true;
 
-    trace!("WITH IDS: IDS: {:?}", ids);
+    trace!("WITH IDS: IDS: {:?}", type_ids);
 
-    for id in ids {
+    for id in type_ids {
         if let Some(storage) = world.components.get(&id) {
-            let with_id: Vec<Entity> = storage
+            let with_type: Vec<Entity> = storage
                 .content
                 .iter()
                 .enumerate()
@@ -325,32 +335,60 @@ fn with_ids(ids: Vec<TypeId>, world: &World) -> Vec<Entity> {
                 .map(|(i, _)| Entity { id: i })
                 .collect();
 
-            trace!("WITH IDS: ITERATION: RESULT: {:?}", with_id);
-            buffer = arrays_and(with_id, Vec::from_iter(buffer));
+            trace!("WITH IDS: ITERATION: RESULT: {:?}", with_type);
+            if !is_first_iter {
+                buffer = arrays_and(with_type, Vec::from_iter(buffer));
+            } else {
+                is_first_iter = false;
+                let set : HashSet<Entity> = HashSet::from_iter(with_type);
+                buffer.extend(set);
+            }
+            
             trace!("WITH IDS: ITERATION: BUFFER: {:?}", buffer)
         }
     }
-    for e in buffer {
-        result.push(e);
-    }
+    result = Vec::from_iter(buffer);
     trace!("WITH IDS: RESULT: {:?}", result);
     result
 }
 
-fn arrays_and(arr1: Vec<Entity>, arr2: Vec<Entity>) -> HashSet<Entity> {
-    let result: HashSet<Entity>;
+fn without_types(type_ids: Vec<TypeId>, world: &World) -> Vec<Entity> {
+    let result: Vec<Entity>;
+    let mut buffer: HashSet<Entity> = HashSet::new();
+    let mut is_first_iter = true;
 
-    if arr1.is_empty() {
-        return HashSet::from_iter(arr2);
-    } else if arr2.is_empty() {
-        return HashSet::from_iter(arr1);
+    trace!("WITHOUT IDS: IDS: {:?}", type_ids);
+
+    for id in type_ids {
+        if let Some(storage) = world.components.get(&id) {
+            let without_type: Vec<Entity> = storage
+                .content
+                .iter()
+                .enumerate()
+                .filter(|(_, c)| c.is_none())
+                .map(|(i, _)| Entity { id: i })
+                .collect();
+
+            trace!("WITHOUT IDS: ITERATION: RESULT: {:?}", without_type);
+            if !is_first_iter {
+                buffer = arrays_and(without_type, Vec::from_iter(buffer));
+            } else {
+                is_first_iter = false;
+                let set : HashSet<Entity> = HashSet::from_iter(without_type);
+                buffer.extend(set);
+            }
+            trace!("WITHOUT IDS: ITERATION: BUFFER: {:?}", buffer)
+        }
     }
-
-    let arr_and: Vec<Entity> = arr1.into_iter().filter(|e| arr2.contains(e)).collect();
-
-    result = HashSet::from_iter(arr_and);
-
+    result = Vec::from_iter(buffer);
     result
+}
+
+fn arrays_and(arr1: Vec<Entity>, arr2: Vec<Entity>) -> HashSet<Entity> {
+    let arr1set: HashSet<Entity> = HashSet::from_iter(arr1);
+    let arr2set: HashSet<Entity> = HashSet::from_iter(arr2);
+
+    arr1set.intersection(&arr2set).copied().collect()
 }
 
 fn arrays_or(arr1: Vec<Entity>, arr2: Vec<Entity>) -> HashSet<Entity> {

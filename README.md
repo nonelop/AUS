@@ -1,38 +1,40 @@
-# AUS (Artificial Universe Simulation)  
+# AUS
+**AUS** is a game and simulation engine written in Rust. Unlike many others, it uses ECS instead of OOP; there are many tools for convenient and easy development, a rich standard set of components and systems, and much more.
 
-![Status](https://img.shields.io/badge/status-alpha-orange)
-![Rust](https://img.shields.io/badge/rust-2024_edition-blue)
-![License](https://img.shields.io/badge/license-GPLv3-green)
+> Status - 0.5.0, new features are in active development, and the API will change.
 
-**AUS** is an engine and simulation written in Rust. It models Space, Time, Geometric calculations, and Physical laws, along with objects, and in the future, it will provide a space for the emergence of spontaneous reactions and events, such as chemistry and biology.
+## Goal and architecture
+Initially, the engine was conceived for a narrow task - simulating the universe and physics in it, and later life. But now the goal is different: the engine is being made with an emphasis on relative universality, while the original goal has not been replaced, only supplemented.
 
-> Status: 0.4.0-alpha. Under active development. Architecture and APIs are subject to change.
+Architecturally, the engine is not a single component but a collection of other engines. An engine for ECS, a physics engine, our own algebra crate, and in the future our own crate for 3D rendering. Communication between them is carried out via bridges; none of them knows about the others.
 
-## Philosophy
+A unique (as far as I know) feature is the EQL language - a query language for ECS capable of running at runtime. Example query: ```(SELECT WITH Position3D)``` - will give you all entities with the Position3D component. Just three words, and you can write them anywhere, including a terminal during execution. No compilation needed.
 
-The engine provides you only with basic geometry and body physics, while you build your own simulation through Objects. The engine is meant solely for *creating* simulations, not being one itself. You can create your unique objects via the `Body` trait, set up their physics via `MoveableBody` and `CollidableBody`, place them in space, and write custom methods for them. This is the **Engine-Body-Object** architecture, where you build your objects using the layers below.  
-## What's already here
+## What already exists
+- ECS and minimal EQL
+- Minimal physics engine
+- Algebra crate
+- Simple 3D visualization on kiss3d
 
-- Geometry, basic shapes, and collisions  
-- Physics, object collision, and movement with velocity
-- Body traits and subtraits for physics implementation
-- All of this is described in [DOCS.md](DOCS.md).
+## What is in development
+- Full-fledged EQL language
+- Physics support for all main 3D shapes / polygons
+- Expansion of the standard ECS set - more components and systems out of the box
+- Our own OpenGL visualization
+- GUI engine and possibly our own scripting language
 
-## Roadmap
-- More physical variables and laws: mass, gravity, friction for applicable objects.
-- More traits and body types.
-- Geometry improvements and adding a large number of new shapes.
-- Chemistry and biology simulation.
-- 3D visualization instead of console output, and much more.
-
-## Quick Start
-```bash
-git clone https://github.com/nonelop/AUS.git  
-cd AUS  
-cargo run  
+## Quick start
 ```
-*(Currently outputs the movement and collision of an atom. Check [main.rs](https://github.com/nonelop/AUS/blob/main/src/main.rs) for modifications).*
+git clone https://github.io/nonelop/AUS
+cd AUS/crates/demo
+cargo run
+```
 
-### Made entirely by humans, with zero AI coding.
-The Telegram channel is currently inactive, but it exists: [Telegram Channel.](https://t.me/AUS_DevLog)
-Contact the developer: [Telegram](https://t.me/Nonelop).
+Outputs the result of several systems in 3D via kiss3d.
+
+#### To learn how to contribute to the project, read CONTRIBUTING.md.
+
+##### Project development channel: https://t.me/AUS_DevLog  
+##### My Telegram: https://t.me/Nonelop
+
+Ask me questions personally or via issues.

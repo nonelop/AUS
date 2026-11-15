@@ -24,7 +24,7 @@ pub struct Visulized {}
 
 pub fn resolve_collision(world: &mut World) {
     let collidable = world
-        .query("WITH (Position3D Velocity3D Rotation3D)")
+        .query("SELECT WITH (Position3D Velocity3D Rotation3D)")
         .unwrap();
 
     for e in collidable {}

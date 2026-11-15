@@ -18,7 +18,9 @@ impl Visual {
     }
 
     pub fn update(&mut self, world: &mut World) {
-        let entities = world.query("SELECT WITH (Visulized Position3D Rotation3D)").unwrap();
+        let entities = world
+            .query("SELECT WITH (Visulized Position3D Rotation3D)")
+            .unwrap();
 
         let mut to_delete: Vec<Entity> = Vec::new();
 
