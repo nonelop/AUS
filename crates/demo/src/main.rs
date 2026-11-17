@@ -1,14 +1,14 @@
+use std::format;
+
 use ecs::World;
 use ecs::eql::resolver;
 use ecs_utils::*;
 use env_logger;
 use kiss3d::prelude::*;
+use rand::seq::IndexedRandom;
 use visual::Visual;
 use wisk::prelude::*;
-
 const DT: f64 = 0.01;
-
-struct Dead {}
 
 #[kiss3d::main]
 async fn main() {
@@ -64,6 +64,37 @@ async fn main() {
             println!("{:?}", e);
         }
     }
+
+    // Time test
+    let mut i = 0;
+    let mut times: Vec<std::time::Duration> = Vec::new();
+    let mut rng = rand::rng();
+    let types = ["Position3D", "Velocity3D", "Cube3D"];
+    let query_quantity = 100000;
+
+    while i != query_quantity {
+        println!("ITERATION: {}", i);
+        let query: &str = &format!(
+            "(SELECT WITH {} OR WITHOUT {} WITH {})",
+            types.choose(&mut rng).unwrap(),
+            types.choose(&mut rng).unwrap(),
+            types.choose(&mut rng).unwrap(),
+        );
+        let now = std::time::SystemTime::now();
+        let _ = world.query(query).unwrap();
+        times.push(now.elapsed().unwrap());
+        i += 1;
+    }
+    let mut total = 0;
+    for t in times {
+        total += t.as_micros();
+    }
+    println!(
+        "TOTAL TIME {} QUERIES: {} | AVERAGE QUERY TIME: {}",
+        query_quantity,
+        total,
+        total / query_quantity
+    );
 
     while window.render_3d(&mut visual.scene, &mut camera).await {
         moving_system(&mut world);

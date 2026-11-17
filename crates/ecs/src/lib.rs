@@ -52,8 +52,8 @@ impl<T> Storage<T> {
 }
 
 pub struct World {
-    pub(crate) components: HashMap<TypeId, Storage<Box<dyn Any>>>,
-    pub(crate) type_names: HashMap<String, TypeId>,
+    components: HashMap<TypeId, Storage<Box<dyn Any>>>,
+    type_names: HashMap<String, TypeId>,
     entity_registry: Vec<Option<Entity>>,
     id_counter: usize,
 }
@@ -133,6 +133,20 @@ impl World {
             }
         } else {
             None
+        }
+    }
+
+    pub fn reg_component<T: 'static>(&mut self) {
+        let key = TypeId::of::<T>();
+
+        if let Some(_) = self.components.get(&key) {
+            return;
+        } else {
+            let new_storage = Storage::new();
+            self.components.insert(key, new_storage);
+
+            let type_name = type_name::<T>();
+            self.type_names.insert(type_name.to_string(), key);
         }
     }
 
