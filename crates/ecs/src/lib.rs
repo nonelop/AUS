@@ -172,7 +172,7 @@ impl World {
         }
     }
 
-    pub fn query(&mut self, query: &str) -> Result<HashSet<Entity>, eql::ParserError> {
+    pub fn query(&mut self, query: &str) -> Result<HashSet<Entity>, eql::EQLError> {
         resolver(query, self)
     }
 }

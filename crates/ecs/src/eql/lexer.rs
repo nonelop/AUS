@@ -22,6 +22,7 @@ pub(crate) fn lexer(query: &str) -> Vec<Token> {
             token_buffer.push(c);
         }
     }
+    push_token(&mut token_buffer, &mut lexed_tokens);
     trace!("LEXER: TOKENS: {:?}", lexed_tokens);
     lexed_tokens
 }
