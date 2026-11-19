@@ -8,6 +8,7 @@ pub(crate) enum Token {
     Without,
     And,
     Or,
+    End,
 }
 
 pub(crate) fn lexer(query: &str) -> Vec<Token> {
@@ -23,6 +24,7 @@ pub(crate) fn lexer(query: &str) -> Vec<Token> {
         }
     }
     push_token(&mut token_buffer, &mut lexed_tokens);
+    lexed_tokens.push(Token::End);
     trace!("LEXER: TOKENS: {:?}", lexed_tokens);
     lexed_tokens
 }

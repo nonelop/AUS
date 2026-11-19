@@ -1,7 +1,7 @@
 # Design Doc 01 | EQL Parser
 ## Header
 - Date: 2026-11-18
-- Status: In Progress
+- Status: Done
 - Priority: High
 
 ## Problem
