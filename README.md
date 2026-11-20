@@ -1,6 +1,10 @@
 # AUS
 **AUS** is a game and simulation engine written in Rust. Unlike many others, it uses ECS instead of OOP; there are many tools for convenient and easy development, a rich standard set of components and systems, and much more.
 
+![Version](https://img.shields.io/badge/version-0.5.0-green)
+![GitHub License](https://img.shields.io/github/license/nonelop/AUS)
+![GitHub language count](https://img.shields.io/github/languages/top/nonelop/AUS)
+
 > Status - 0.5.0, new features are in active development, and the API will change.
 
 ## Goal and architecture
@@ -25,12 +29,22 @@ A unique (as far as I know) feature is the EQL language - a query language for E
 
 ## Quick start
 ```
-git clone https://github.io/nonelop/AUS
+git clone https://github.com/nonelop/AUS
 cd AUS/crates/demo
 cargo run
 ```
 
 Outputs the result of several systems in 3D via kiss3d.
+
+## License
+
+Licensed under either of
+
+ * Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
+ * MIT license ([LICENSE-MIT](LICENSE-MIT))
+
+at your option.
+
 
 #### To learn how to contribute to the project, read CONTRIBUTING.md.
 

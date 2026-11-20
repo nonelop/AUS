@@ -1,4 +1,4 @@
-use ecs::{Query, World};
+use ecs::{World};
 use physics::{BodySnapshot, CollisionInfo, CollisionResult, collide::collide};
 use wisk::prelude::*;
 
