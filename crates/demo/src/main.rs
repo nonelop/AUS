@@ -1,4 +1,5 @@
 use std::format;
+use std::io::{self, Write};
 
 use ecs::World;
 use ecs_utils::*;
@@ -16,6 +17,7 @@ async fn main() {
     let mut visual = Visual::new();
     let mut window = Window::new("AUS Engine").await;
     let mut camera = OrbitCamera3d::default();
+    visual.scene.add_light(Light::directional(Vec3 { x: 1.0, y: 0.0, z: 0.0 }));
 
     let mut world = World::new();
 
@@ -51,7 +53,7 @@ async fn main() {
     world.add_component(entity.id, Visulized {});
     world.add_component(entity.id, Cube3D { edge_size: 1.0 });
 
-    for _ in 0..=1000 {
+    for _ in 0..=10 {
         world.spawn();
     }
 
@@ -63,7 +65,6 @@ async fn main() {
     let query_quantity = 100000;
 
     while i != query_quantity {
-        println!("ITERATION: {}", i);
         let query: &str = &format!(
             "SELECT WITH {} OR WITHOUT {} WITH {}",
             types.choose(&mut rng).unwrap(),
@@ -72,7 +73,12 @@ async fn main() {
         );
         let now = std::time::SystemTime::now();
         let _ = world.query(query).unwrap();
-        times.push(now.elapsed().unwrap());
+        let t = now.elapsed().unwrap();
+        times.push(t);
+        if i % 500 == 0 {
+            print!("Time test progress: {:.2}% | Iteration time: {}\r", (i as f64 / query_quantity as f64) * 100.0, t.as_micros());
+            io::stdout().flush().unwrap();
+        }
         i += 1;
     }
     let mut total = 0;

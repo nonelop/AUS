@@ -21,7 +21,7 @@ pub fn processor(
     for unit in units {
         match unit {
             ProcessingUnit::SelectingUnit { tree } => {
-                result = resolve_selecting_tree(tree, world)?;
+                result.extend(resolve_selecting_tree(tree, world)?);
             }
         }
     }
@@ -130,13 +130,8 @@ fn without_resolver(
 }
 
 fn type_linker(world: &World, type_name: &str) -> Result<TypeId, ProcessorError> {
-    for (raw_name, type_id) in &world.type_names {
-        let name: Vec<&str> = raw_name.split("::").collect();
-        let name = name[name.len() - 1];
-
-        if type_name == name {
-            return Ok(*type_id);
-        }
+    if let Some(id) = world.type_names.get(type_name) {
+        return Ok(*id);
     }
     Err(ProcessorError::CannotLinkType(type_name.to_string()))
 }

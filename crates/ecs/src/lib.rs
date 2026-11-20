@@ -168,10 +168,12 @@ impl World {
                 let mut new_storage = Storage::new();
                 new_storage.insert(id, boxed);
 
-                let type_name = type_name::<T>();
+                let raw_name = type_name::<T>();
+                let name: Vec<&str> = raw_name.split("::").collect();
+                let name = *name.last().unwrap();
 
                 self.components.insert(key, new_storage);
-                self.type_names.insert(type_name.to_string(), key);
+                self.type_names.insert(name.to_string(), key);
             }
         }
     }
