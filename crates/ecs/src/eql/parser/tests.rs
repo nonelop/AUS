@@ -12,7 +12,7 @@ fn with_a() {
     assert_eq!(
         unit,
         vec![ProcessingUnit::SelectingUnit {
-            filters: vec![Filter::With(vec!["A".to_string()])]
+            tree: FilterTree::With(vec!["A".to_string()])
         }]
     )
 }
@@ -28,7 +28,7 @@ fn without_a() {
     assert_eq!(
         unit,
         vec![ProcessingUnit::SelectingUnit {
-            filters: vec![Filter::Without(vec!["A".to_string()])]
+            tree: FilterTree::Without(vec!["A".to_string()])
         }]
     )
 }
@@ -44,10 +44,10 @@ fn with_a_without_b() {
     assert_eq!(
         unit,
         vec![ProcessingUnit::SelectingUnit {
-            filters: vec![Filter::And {
-                a: Box::new(Filter::With(vec!["A".to_string()])),
-                b: Box::new(Filter::Without(vec!["B".to_string()]))
-            }]
+            tree: FilterTree::And {
+                a: Box::new(FilterTree::With(vec!["A".to_string()])),
+                b: Box::new(FilterTree::Without(vec!["B".to_string()]))
+            }
         }]
     )
 }
@@ -63,10 +63,10 @@ fn with_a_or_with_b() {
     assert_eq!(
         unit,
         vec![ProcessingUnit::SelectingUnit {
-            filters: vec![Filter::Or {
-                a: Box::new(Filter::With(vec!["A".to_string()])),
-                b: Box::new(Filter::With(vec!["B".to_string()]))
-            }]
+            tree: FilterTree::Or {
+                a: Box::new(FilterTree::With(vec!["A".to_string()])),
+                b: Box::new(FilterTree::With(vec!["B".to_string()]))
+            }
         }]
     )
 }
@@ -82,13 +82,13 @@ fn nesting_operators() {
     assert_eq!(
         unit,
         vec![ProcessingUnit::SelectingUnit {
-            filters: vec![Filter::Or {
-                a: Box::new(Filter::And {
-                    a: Box::new(Filter::With(vec!["A".to_string()])),
-                    b: Box::new(Filter::Without(vec!["B".to_string()]))
+            tree: FilterTree::Or {
+                a: Box::new(FilterTree::And {
+                    a: Box::new(FilterTree::With(vec!["A".to_string()])),
+                    b: Box::new(FilterTree::Without(vec!["B".to_string()]))
                 }),
-                b: Box::new(Filter::With(vec!["C".to_string()]))
-            }]
+                b: Box::new(FilterTree::With(vec!["C".to_string()]))
+            }
         }]
     )
 }
@@ -105,13 +105,13 @@ fn many_select() {
         units,
         vec![
             ProcessingUnit::SelectingUnit {
-                filters: vec![Filter::And {
-                    a: Box::new(Filter::With(vec!["A".to_string()])),
-                    b: Box::new(Filter::With(vec!["B".to_string()]))
-                }]
+                tree: FilterTree::And {
+                    a: Box::new(FilterTree::With(vec!["A".to_string()])),
+                    b: Box::new(FilterTree::With(vec!["B".to_string()]))
+                }
             },
             ProcessingUnit::SelectingUnit {
-                filters: vec![Filter::With(vec!["C".to_string()])]
+                tree: FilterTree::With(vec!["C".to_string()])
             }
         ]
     )

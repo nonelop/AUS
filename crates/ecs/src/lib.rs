@@ -54,7 +54,7 @@ impl<T> Storage<T> {
 pub struct World {
     components: HashMap<TypeId, Storage<Box<dyn Any>>>,
     type_names: HashMap<String, TypeId>,
-    entity_registry: Vec<Option<Entity>>,
+    entity_registry: Vec<bool>,
     id_counter: usize,
 }
 
@@ -75,9 +75,9 @@ impl World {
 
         if self.entity_registry.len() <= self.id_counter {
             self.entity_registry
-                .resize_with(self.id_counter + 1, || None);
+                .resize_with(self.id_counter + 1, || false);
         }
-        self.entity_registry[self.id_counter] = Some(e);
+        self.entity_registry[self.id_counter] = true;
 
         self.id_counter += 1;
         e
@@ -85,7 +85,7 @@ impl World {
 
     pub fn despawn(&mut self, id: usize) {
         if self.entity_registry.len() > id {
-            self.entity_registry[id] = None
+            self.entity_registry[id] = false
         } else {
             return;
         }
@@ -98,7 +98,7 @@ impl World {
     pub fn check(&self, id: usize) -> bool {
         if self.entity_registry.len() <= id {
             false
-        } else if self.entity_registry.get(id) == Some(&None) {
+        } else if self.entity_registry.get(id) == Some(&false) {
             false
         } else {
             true
@@ -134,6 +134,10 @@ impl World {
         } else {
             None
         }
+    }
+
+    pub(crate) fn get_storage(&self, id: TypeId) -> Option<&Storage<Box<dyn Any>>> {
+        self.components.get(&id)
     }
 
     pub fn reg_component<T: 'static>(&mut self) {
@@ -174,20 +178,5 @@ impl World {
 
     pub fn query(&mut self, query: &str) -> Result<HashSet<Entity>, eql::EQLError> {
         resolver(query, self)
-    }
-}
-
-pub struct Query {
-    with: Vec<TypeId>,
-}
-
-impl Query {
-    pub fn new() -> Self {
-        Self { with: Vec::new() }
-    }
-
-    pub fn with<T: 'static>(mut self) -> Self {
-        self.with.push(TypeId::of::<T>());
-        self
     }
 }

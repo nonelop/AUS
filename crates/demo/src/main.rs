@@ -1,7 +1,6 @@
 use std::format;
 
 use ecs::World;
-use ecs::eql::resolver;
 use ecs_utils::*;
 use env_logger;
 use kiss3d::prelude::*;
@@ -52,17 +51,8 @@ async fn main() {
     world.add_component(entity.id, Visulized {});
     world.add_component(entity.id, Cube3D { edge_size: 1.0 });
 
-    let entities = resolver("(SELECT WITH Position3D)", &world);
-
-    match entities {
-        Ok(entities) => {
-            for e in entities {
-                println!("{:?}", e.id)
-            }
-        }
-        Err(e) => {
-            println!("{:?}", e);
-        }
+    for _ in 0..=1000 {
+        world.spawn();
     }
 
     // Time test
@@ -75,7 +65,7 @@ async fn main() {
     while i != query_quantity {
         println!("ITERATION: {}", i);
         let query: &str = &format!(
-            "(SELECT WITH {} OR WITHOUT {} WITH {})",
+            "SELECT WITH {} OR WITHOUT {} WITH {}",
             types.choose(&mut rng).unwrap(),
             types.choose(&mut rng).unwrap(),
             types.choose(&mut rng).unwrap(),
@@ -103,7 +93,7 @@ async fn main() {
 }
 
 fn moving_system(world: &mut World) {
-    let entities = world.query("(SELECT WITH Position3D Velocity3D)").unwrap();
+    let entities = world.query("SELECT WITH Position3D Velocity3D").unwrap();
 
     for e in &entities {
         let (position, velocity) = world

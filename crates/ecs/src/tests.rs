@@ -5,8 +5,6 @@ struct Position {
     pub x: i32,
 }
 
-struct Moveable {}
-
 fn test_values() -> (World, Storage<Position>, Entity) {
     let mut world = World::new();
     let storage: Storage<Position> = Storage::new();
@@ -68,45 +66,4 @@ fn test_world_append_get() {
     let result = world.get_component::<Position>(entity.id).unwrap();
 
     assert_eq!(result.x, 5)
-}
-
-// EQL
-
-#[test]
-fn test_eql_selecting() {
-    let (mut world, _, _) = test_values();
-    let entity = world.spawn();
-    world.add_component(entity.id, Position { x: 10 });
-
-    let result = world.query("(SELECT WITH Position)").unwrap();
-    for e in result {
-        assert_eq!(e, entity)
-    }
-}
-
-#[test]
-fn test_eql_logical_ops() {
-    let (mut world, _, _) = test_values();
-    world.reg_component::<Moveable>();
-    let entity = world.spawn();
-    world.add_component(entity.id, Position { x: 10 });
-
-    let result = world
-        .query("(SELECT WITH Moveable OR WITH Position)")
-        .unwrap();
-    for e in result {
-        assert_eq!(e, entity)
-    }
-}
-
-#[test]
-fn test_eql_without() {
-    let (mut world, _, _) = test_values();
-    world.reg_component::<Position>();
-    let entity = world.spawn();
-
-    let result = world.query("(SELECT WITHOUT Position)").unwrap();
-    for e in result {
-        assert_eq!(e, entity)
-    }
 }

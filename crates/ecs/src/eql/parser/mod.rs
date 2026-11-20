@@ -6,11 +6,17 @@ use std::matches;
 use super::lexer::Token;
 
 #[derive(Debug, PartialEq)]
-pub(crate) enum Filter {
+pub(crate) enum FilterTree {
     With(Vec<String>),
     Without(Vec<String>),
-    And { a: Box<Filter>, b: Box<Filter> },
-    Or { a: Box<Filter>, b: Box<Filter> },
+    And {
+        a: Box<FilterTree>,
+        b: Box<FilterTree>,
+    },
+    Or {
+        a: Box<FilterTree>,
+        b: Box<FilterTree>,
+    },
 }
 
 #[derive(Debug, PartialEq)]
@@ -19,7 +25,7 @@ pub enum FilterError {
     UnexpectedArguments,
 }
 
-impl Filter {
+impl FilterTree {
     fn from_raw(
         raw: &RawFilter,
         a: Option<&RawFilter>,
@@ -27,12 +33,12 @@ impl Filter {
     ) -> Result<Self, FilterError> {
         match (raw, a, b) {
             (RawFilter::And, Some(a), Some(b)) => Ok(Self::And {
-                a: Box::new(Filter::from_raw(a, None, None)?),
-                b: Box::new(Filter::from_raw(b, None, None)?),
+                a: Box::new(FilterTree::from_raw(a, None, None)?),
+                b: Box::new(FilterTree::from_raw(b, None, None)?),
             }),
             (RawFilter::Or, Some(a), Some(b)) => Ok(Self::Or {
-                a: Box::new(Filter::from_raw(a, None, None)?),
-                b: Box::new(Filter::from_raw(b, None, None)?),
+                a: Box::new(FilterTree::from_raw(a, None, None)?),
+                b: Box::new(FilterTree::from_raw(b, None, None)?),
             }),
             (RawFilter::And | RawFilter::Or, _, _) => Err(FilterError::ExpectedArguments),
             (RawFilter::With(with), None, None) => Ok(Self::With(with.to_vec())),
@@ -42,9 +48,9 @@ impl Filter {
             }
         }
     }
-    fn set_b(&mut self, value: Filter) -> Result<(), FilterError> {
+    fn set_b(&mut self, value: FilterTree) -> Result<(), FilterError> {
         match self {
-            Filter::And { a: _, b } | Filter::Or { a: _, b } => {
+            FilterTree::And { a: _, b } | FilterTree::Or { a: _, b } => {
                 **b = value;
                 Ok(())
             }
@@ -63,7 +69,7 @@ enum RawFilter {
 
 #[derive(Debug, PartialEq)]
 pub(crate) enum ProcessingUnit {
-    SelectingUnit { filters: Vec<Filter> },
+    SelectingUnit { tree: FilterTree },
 }
 
 #[derive(Debug, PartialEq)]
@@ -132,9 +138,7 @@ impl Parser {
         raw = Self::append_operators(raw);
         let try_build = Self::build_filter(raw);
         let result = match try_build {
-            Ok(filters) => ProcessingUnit::SelectingUnit {
-                filters: vec![filters],
-            },
+            Ok(filter_tree) => ProcessingUnit::SelectingUnit { tree: filter_tree },
             Err(e) => {
                 return Err(ParserError::FilterError(e));
             }
@@ -177,14 +181,16 @@ impl Parser {
         }
         result
     }
-    fn build_filter(raw: Vec<RawFilter>) -> Result<Filter, FilterError> {
-        let mut result: Filter;
+    fn build_filter(raw: Vec<RawFilter>) -> Result<FilterTree, FilterError> {
+        let mut result: FilterTree;
         let mut iter = raw.into_iter();
 
         result = match iter.next() {
-            Some(RawFilter::With(names)) => Filter::from_raw(&RawFilter::With(names), None, None)?,
+            Some(RawFilter::With(names)) => {
+                FilterTree::from_raw(&RawFilter::With(names), None, None)?
+            }
             Some(RawFilter::Without(names)) => {
-                Filter::from_raw(&RawFilter::Without(names), None, None)?
+                FilterTree::from_raw(&RawFilter::Without(names), None, None)?
             }
             _ => {
                 return Err(FilterError::UnexpectedArguments);
@@ -194,19 +200,19 @@ impl Parser {
         while let Some(filter) = iter.next() {
             match filter {
                 RawFilter::And => {
-                    result = Filter::And {
+                    result = FilterTree::And {
                         a: Box::new(result),
-                        b: Box::new(Filter::With(vec![])),
+                        b: Box::new(FilterTree::With(vec![])),
                     }
                 }
                 RawFilter::Or => {
-                    result = Filter::Or {
+                    result = FilterTree::Or {
                         a: Box::new(result),
-                        b: Box::new(Filter::With(vec![])),
+                        b: Box::new(FilterTree::With(vec![])),
                     }
                 }
                 RawFilter::With(_) | RawFilter::Without(_) => {
-                    result.set_b(Filter::from_raw(&filter, None, None)?)?;
+                    result.set_b(FilterTree::from_raw(&filter, None, None)?)?;
                 }
             }
         }
