@@ -1,14 +1,14 @@
+use std::format;
+use std::io::{self, Write};
+
 use ecs::World;
-use ecs::eql::resolver;
 use ecs_utils::*;
 use env_logger;
 use kiss3d::prelude::*;
+use rand::seq::IndexedRandom;
 use visual::Visual;
 use wisk::prelude::*;
-
 const DT: f64 = 0.01;
-
-struct Dead {}
 
 #[kiss3d::main]
 async fn main() {
@@ -17,6 +17,7 @@ async fn main() {
     let mut visual = Visual::new();
     let mut window = Window::new("AUS Engine").await;
     let mut camera = OrbitCamera3d::default();
+    visual.scene.add_light(Light::directional(Vec3 { x: 1.0, y: 0.0, z: 0.0 }));
 
     let mut world = World::new();
 
@@ -52,18 +53,44 @@ async fn main() {
     world.add_component(entity.id, Visulized {});
     world.add_component(entity.id, Cube3D { edge_size: 1.0 });
 
-    let entities = resolver("(SELECT WITH Position3D)", &world);
-
-    match entities {
-        Ok(entities) => {
-            for e in entities {
-                println!("{:?}", e.id)
-            }
-        }
-        Err(e) => {
-            println!("{:?}", e);
-        }
+    for _ in 0..=10 {
+        world.spawn();
     }
+
+    // Time test
+    let mut i = 0;
+    let mut times: Vec<std::time::Duration> = Vec::new();
+    let mut rng = rand::rng();
+    let types = ["Position3D", "Velocity3D", "Cube3D"];
+    let query_quantity = 100000;
+
+    while i != query_quantity {
+        let query: &str = &format!(
+            "SELECT WITH {} OR WITHOUT {} WITH {}",
+            types.choose(&mut rng).unwrap(),
+            types.choose(&mut rng).unwrap(),
+            types.choose(&mut rng).unwrap(),
+        );
+        let now = std::time::SystemTime::now();
+        let _ = world.query(query).unwrap();
+        let t = now.elapsed().unwrap();
+        times.push(t);
+        if i % 500 == 0 {
+            print!("Time test progress: {:.2}% | Iteration time: {}\r", (i as f64 / query_quantity as f64) * 100.0, t.as_micros());
+            io::stdout().flush().unwrap();
+        }
+        i += 1;
+    }
+    let mut total = 0;
+    for t in times {
+        total += t.as_micros();
+    }
+    println!(
+        "TOTAL TIME {} QUERIES: {} | AVERAGE QUERY TIME: {}",
+        query_quantity,
+        total,
+        total / query_quantity
+    );
 
     while window.render_3d(&mut visual.scene, &mut camera).await {
         moving_system(&mut world);
@@ -72,7 +99,7 @@ async fn main() {
 }
 
 fn moving_system(world: &mut World) {
-    let entities = world.query("(SELECT WITH Position3D Velocity3D)").unwrap();
+    let entities = world.query("SELECT WITH Position3D Velocity3D").unwrap();
 
     for e in &entities {
         let (position, velocity) = world

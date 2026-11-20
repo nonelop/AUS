@@ -12,3 +12,4 @@ ecs = { path = "../ecs" }
 ecs_utils = { path = "../ecs_utils" }
 env_logger = "0.11.11"
 log = "0.4.35"
+rand = "0.10.4"

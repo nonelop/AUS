@@ -36,6 +36,16 @@ cargo run
 
 Outputs the result of several systems in 3D via kiss3d.
 
+## License
+
+Licensed under either of
+
+ * Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
+ * MIT license ([LICENSE-MIT](LICENSE-MIT))
+
+at your option.
+
+
 #### To learn how to contribute to the project, read CONTRIBUTING.md.
 
 ##### Project development channel: https://t.me/AUS_DevLog  

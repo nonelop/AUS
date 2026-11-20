@@ -52,9 +52,9 @@ impl<T> Storage<T> {
 }
 
 pub struct World {
-    pub(crate) components: HashMap<TypeId, Storage<Box<dyn Any>>>,
-    pub(crate) type_names: HashMap<String, TypeId>,
-    entity_registry: Vec<Option<Entity>>,
+    components: HashMap<TypeId, Storage<Box<dyn Any>>>,
+    type_names: HashMap<String, TypeId>,
+    entity_registry: Vec<bool>,
     id_counter: usize,
 }
 
@@ -75,9 +75,9 @@ impl World {
 
         if self.entity_registry.len() <= self.id_counter {
             self.entity_registry
-                .resize_with(self.id_counter + 1, || None);
+                .resize_with(self.id_counter + 1, || false);
         }
-        self.entity_registry[self.id_counter] = Some(e);
+        self.entity_registry[self.id_counter] = true;
 
         self.id_counter += 1;
         e
@@ -85,7 +85,7 @@ impl World {
 
     pub fn despawn(&mut self, id: usize) {
         if self.entity_registry.len() > id {
-            self.entity_registry[id] = None
+            self.entity_registry[id] = false
         } else {
             return;
         }
@@ -98,7 +98,7 @@ impl World {
     pub fn check(&self, id: usize) -> bool {
         if self.entity_registry.len() <= id {
             false
-        } else if self.entity_registry.get(id) == Some(&None) {
+        } else if self.entity_registry.get(id) == Some(&false) {
             false
         } else {
             true
@@ -136,6 +136,27 @@ impl World {
         }
     }
 
+    pub(crate) fn get_storage(&self, id: TypeId) -> Option<&Storage<Box<dyn Any>>> {
+        self.components.get(&id)
+    }
+
+    pub fn reg_component<T: 'static>(&mut self) {
+        let key = TypeId::of::<T>();
+
+        if let Some(_) = self.components.get(&key) {
+            return;
+        } else {
+            let new_storage = Storage::new();
+            self.components.insert(key, new_storage);
+
+            let raw_name = type_name::<T>();
+            let name: Vec<&str> = raw_name.split("::").collect();
+            let name = *name.last().unwrap();
+
+            self.type_names.insert(name.to_string(), key);
+        }
+    }
+
     pub fn add_component<T: 'static>(&mut self, id: usize, component: T) {
         let key = TypeId::of::<T>();
         let storage = self.components.get_mut(&key);
@@ -150,30 +171,17 @@ impl World {
                 let mut new_storage = Storage::new();
                 new_storage.insert(id, boxed);
 
-                let type_name = type_name::<T>();
+                let raw_name = type_name::<T>();
+                let name: Vec<&str> = raw_name.split("::").collect();
+                let name = *name.last().unwrap();
 
                 self.components.insert(key, new_storage);
-                self.type_names.insert(type_name.to_string(), key);
+                self.type_names.insert(name.to_string(), key);
             }
         }
     }
 
-    pub fn query(&mut self, query: &str) -> Result<HashSet<Entity>, eql::ParserError> {
+    pub fn query(&mut self, query: &str) -> Result<HashSet<Entity>, eql::EQLError> {
         resolver(query, self)
-    }
-}
-
-pub struct Query {
-    with: Vec<TypeId>,
-}
-
-impl Query {
-    pub fn new() -> Self {
-        Self { with: Vec::new() }
-    }
-
-    pub fn with<T: 'static>(mut self) -> Self {
-        self.with.push(TypeId::of::<T>());
-        self
     }
 }
