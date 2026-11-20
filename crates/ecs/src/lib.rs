@@ -149,8 +149,11 @@ impl World {
             let new_storage = Storage::new();
             self.components.insert(key, new_storage);
 
-            let type_name = type_name::<T>();
-            self.type_names.insert(type_name.to_string(), key);
+            let raw_name = type_name::<T>();
+            let name: Vec<&str> = raw_name.split("::").collect();
+            let name = *name.last().unwrap();
+
+            self.type_names.insert(name.to_string(), key);
         }
     }
 

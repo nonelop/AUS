@@ -5,7 +5,7 @@ struct B {}
 struct C {}
 
 #[test]
-fn single_selecting() {
+fn single_with_selecting() {
     let mut world = World::new();
     for _ in 1..=10 {
         world.spawn();
@@ -17,6 +17,23 @@ fn single_selecting() {
     let expected: HashSet<Entity> = HashSet::from_iter(vec![Entity { id: 3 }]);
 
     assert_eq!(entities, expected)
+}
+
+#[test]
+fn single_without_selecting() {
+    let mut world = World::new();
+    for _ in 1..=4 {
+        world.spawn();
+    }
+    world.reg_component::<A>();
+    world.add_component(3, A {});
+
+    let entities = world.query("SELECT WITHOUT A").unwrap();
+
+    assert!(entities.contains(&Entity { id: 0 }));
+    assert!(entities.contains(&Entity { id: 1 }));
+    assert!(entities.contains(&Entity { id: 2 }));
+    assert!(!entities.contains(&Entity { id: 3 }));
 }
 
 #[test]
