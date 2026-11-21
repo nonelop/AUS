@@ -759,14 +759,14 @@ checksum = "d8b14ccef22fc6f5a8f4d7d768562a182c04ce9a3b3157b91390b52ddfdf1a76"
 
 [[package]]
 name = "ecs"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "log",
 ]
 
 [[package]]
 name = "ecs_utils"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "ecs",
  "physics",
@@ -2332,7 +2332,7 @@ dependencies = [
 
 [[package]]
 name = "physics"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "wisk",
 ]
@@ -3308,7 +3308,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "visual"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "ecs",
  "ecs_utils",
