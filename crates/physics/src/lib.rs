@@ -1,28 +1,36 @@
 use wisk::prelude::*;
 
 pub mod collide;
+
 #[derive(Clone, Copy)]
-pub struct BodySnapshot {
-    pub position: Vector3,
-
-    pub velocity: Vector3,
-    pub angular_velocity: Vector3,
-
-    pub mass: f64,
+struct KinematicProperties {
+    position: Vector3,
+    rotation: Quaternion,
+    velocity: Vector3,
+    angular_velocity: Vector3,
 }
 
 #[derive(Clone, Copy)]
+struct PhysicsProperties {
+    mass: f64
+}
+
+#[derive(Clone, Copy)]
+pub struct Body {
+    pub kinematic: KinematicProperties,
+    pub physics: PhysicsProperties
+}
+
 pub struct CollisionInfo {
-    pub a: BodySnapshot,
-    pub b: BodySnapshot,
+    pub a: Body,
+    pub b: Body,
 
     pub depth: f64,
     pub normal: Vector3,
     pub contact_point: Vector3,
 }
 
-#[derive(Clone, Copy)]
 pub struct CollisionResult {
-    pub a: BodySnapshot,
-    pub b: BodySnapshot,
+    pub a: Body,
+    pub b: Body,
 }

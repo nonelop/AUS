@@ -21,37 +21,51 @@ async fn main() {
 
     let mut world = World::new();
 
-    let entity = world.spawn();
+    let sphere1 = world.spawn();
+    let sphere2 = world.spawn();
+
     world.add_component(
-        entity.id,
+        sphere1.id,
         Position3D(Vector3 {
-            x: 0.0,
+            x: -20.0,
             y: 0.0,
             z: 10.0,
         }),
     );
     world.add_component(
-        entity.id,
+        sphere1.id,
         Velocity3D(Vector3 {
-            x: 1.0,
+            x: 5.0,
             y: 0.0,
             z: 0.0,
         }),
     );
 
+    world.add_component(sphere1.id, Visulized {});
+    world.add_component(sphere1.id, Sphere3D { radius: 1.0 });
+
     world.add_component(
-        entity.id,
-        Rotation3D(Quaternion::from_axis(
-            Vector3 {
-                x: 0.5,
-                y: 0.3,
-                z: 0.2,
-            },
-            3.25,
-        )),
+        sphere2.id,
+        Position3D(Vector3 {
+            x: 20.0,
+            y: 0.0,
+            z: 10.0,
+        }),
     );
-    world.add_component(entity.id, Visulized {});
-    world.add_component(entity.id, Cube3D { edge_size: 1.0 });
+    world.add_component(
+        sphere2.id,
+        Velocity3D(Vector3 {
+            x: -5.0,
+            y: 0.0,
+            z: 0.0,
+        }),
+    );
+
+    world.add_component(sphere2.id, Visulized {});
+    world.add_component(sphere2.id, Sphere3D { radius: 1.0 });
+
+    world.add_component(sphere1.id, Rotation3D(Quaternion::IDENTITY));
+    world.add_component(sphere2.id, Rotation3D(Quaternion::IDENTITY));
 
     for _ in 0..=10 {
         world.spawn();
@@ -61,7 +75,7 @@ async fn main() {
     let mut i = 0;
     let mut times: Vec<std::time::Duration> = Vec::new();
     let mut rng = rand::rng();
-    let types = ["Position3D", "Velocity3D", "Cube3D"];
+    let types = ["Position3D", "Velocity3D", "Sphere3D"];
     let query_quantity = 100000;
 
     while i != query_quantity {
@@ -93,6 +107,7 @@ async fn main() {
     );
 
     while window.render_3d(&mut visual.scene, &mut camera).await {
+        resolve_collision(&mut world);
         moving_system(&mut world);
         visual.update(&mut world);
     }

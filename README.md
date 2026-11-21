@@ -1,9 +1,11 @@
 # AUS
 **AUS** is a game and simulation engine written in Rust. Unlike many others, it uses ECS instead of OOP; there are many tools for convenient and easy development, a rich standard set of components and systems, and much more.
 
-![Version](https://img.shields.io/badge/version-0.6.0-green)
-![GitHub License](https://img.shields.io/github/license/nonelop/AUS)
-![GitHub language count](https://img.shields.io/github/languages/top/nonelop/AUS)
+![Version](https://img.shields.io/github/v/release/nonelop/AUS?include_prereleases&logo=github)
+![GitHub License](https://img.shields.io/github/license/nonelop/AUS?logo=apache)
+![Rust Edition](https://img.shields.io/badge/rust-edition_2024-blue?logo=rust)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/nonelop/AUS/ci.yml?logo=githubactions&logoColor=white)
+
 
 > Status - 0.6.0, new features are in active development, and the API will change.
 
@@ -12,7 +14,7 @@ Initially, the engine was conceived for a narrow task - simulating the universe 
 
 Architecturally, the engine is not a single component but a collection of other engines. An engine for ECS, a physics engine, our own algebra crate, and in the future our own crate for 3D rendering. Communication between them is carried out via bridges; none of them knows about the others.
 
-A unique (as far as I know) feature is the EQL language - a query language for ECS capable of running at runtime. Example query: ```(SELECT WITH Position3D)``` - will give you all entities with the Position3D component. Just three words, and you can write them anywhere, including a terminal during execution. No compilation needed.
+A unique (as far as I know) feature is the EQL language - a query language for ECS capable of running at runtime. Example query: ```SELECT WITH Position3D``` - will give you all entities with the Position3D component. Just three words, and you can write them anywhere, including a terminal during execution. No compilation needed.
 
 ## What already exists
 - ECS and minimal EQL

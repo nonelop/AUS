@@ -1,5 +1,5 @@
 use ecs::{World};
-use physics::{BodySnapshot, CollisionInfo, CollisionResult, collide::collide};
+use physics::{Body, CollisionInfo, CollisionResult, collide::collide};
 use wisk::prelude::*;
 
 // == Most Used Components ==
@@ -24,8 +24,10 @@ pub struct Visulized {}
 
 pub fn resolve_collision(world: &mut World) {
     let collidable = world
-        .query("SELECT WITH (Position3D Velocity3D Rotation3D)")
+        .query("SELECT WITH Position3D Velocity3D Rotation3D")
         .unwrap();
 
-    for e in collidable {}
+    for e in collidable {
+        world.get_mut_component::<Velocity3D>(e.id).unwrap().0 += Vector3::RIGHT * 0.01; 
+    }
 }
